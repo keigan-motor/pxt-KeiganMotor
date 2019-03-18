@@ -44,45 +44,103 @@ namespace keiganmotor {
      */
     export class KeiganMotor {
 
-        id: string;
+        id: string
+        private idArray: number[]
 
-        public velocity: number; // [radians per second] 
-        public position: number; // [radians]
-        public torque: number; // [N*m]
+        public velocity: number // [radians per second] 
+        public position: number // [radians]
+        public torque: number // [N*m]
 
-        public rpm: number; // [rotation per minute] velocity's another expression 
-        public degree: number; // [degree] position's another expression
+        public rpm: number // [rotation per minute] velocity's another expression 
+        public degree: number // [degree] position's another expression
+
+
 
         constructor(id: string) {
-            this.id = id;
+            this.id = id
+            this.makeIdArray()
+        }
+
+        private makeIdArray() {
+            let array = [0, 0, 0, 0];
+            for (let index = 0; index < 4; index++) {
+                array.insertAt(index, this.id.charCodeAt(index));
+            }
+            this.idArray = array;
+        }
+
+        /**
+         * Unit conversion　degree -> radian
+         * @param {number} degree 
+         * @returns {number} radian
+         */
+        private degreeToRadian(degree: number) {
+            return degree * 0.017453292519943295;
+        }
+
+        /**
+         * Unit conversion　radian -> degree
+         * @param {number} radian 
+         * @returns {number} degree
+         */
+        private radianToDegree(radian: number) {
+            return radian / 0.017453292519943295;
+        }
+
+        /**
+         * Unit conversion rpm -> radian/sec 
+         * @param {number} rpm
+         * @returns {number} radian/sec
+         */
+        private rpmToRadianSec(rpm: number) {
+            //rpm ->radian/sec (Math.PI*2/60)
+            return rpm * 0.10471975511965977;
         }
 
         /**
          * Send raw bytes array
          */
         sendRaw(bytes: number[]) {
-            let buf = pins.createBufferFromArray(bytes);
+            let buf = pins.createBufferFromArray(bytes)
+
             radio.sendBuffer(buf);
         }
 
 
         /**
-         * Send data after prepending id 
+         * Send command after prepending id = "XXXX" 
+         * [ X X X X | CMD ]
          */
-        send(data: number[]) {
-            let len = this.id.length;
-            let array: number[] = [];
+        write(command: number) {
+            let buf = pins.createBuffer(5)
+            buf.write(0, pins.createBufferFromArray(this.idArray))
+            buf.setNumber(NumberFormat.UInt8BE, 4, command)
+            radio.sendBuffer(buf)
 
-            for (let index = 0; index < len; index++) {
-                array.insertAt(index, this.id.charCodeAt(index));
-            }
+        }
 
-            for (let index = array.length; index < data.length; index++) {
-                array.insertAt(index, data[index]);
-            }
-            let buf = array;
-            this.sendRaw(buf);
+        /**
+         * Send command after prepending id = "XXXX"
+         * [ X X X X | CMD | VALUES(BYTES) ]
+         */
+        writeSize4(command: number, value: number) {
+            let buf = pins.createBuffer(5 + 4)
+            buf.write(0, pins.createBufferFromArray(this.idArray))
+            buf.setNumber(NumberFormat.UInt8BE, 4, command)
+            buf.setNumber(NumberFormat.UInt8BE, 5, value)
+            radio.sendBuffer(buf)
+        }
 
+        /**
+        * Send command after prepending id = "XXXX"
+        * [ X X X X | CMD | VALUES(BYTES) ]
+        */
+        writeSize2(command: number, value: number) {
+            let buf = pins.createBuffer(5 + 2)
+            buf.write(0, pins.createBufferFromArray(this.idArray))
+            buf.setNumber(NumberFormat.UInt8BE, 4, command)
+            buf.setNumber(NumberFormat.UInt8BE, 5, value)
+            radio.sendBuffer(buf)
         }
 
         /**
@@ -92,7 +150,8 @@ namespace keiganmotor {
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         disable() {
-            this.send([CMD_ACT_DISABLE])
+            this.write(CMD_ACT_DISABLE)
+
         }
 
         /**
@@ -102,9 +161,71 @@ namespace keiganmotor {
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         enable() {
-            this.send([CMD_ACT_ENABLE])
+            this.write(CMD_ACT_ENABLE)
         }
 
+
+        /**
+         * Set speed
+         * @param speed [radians/sec]
+         */
+        //% blockId="enable" block="%KeiganMotor|speed" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        speed(value: number) {
+            this.writeSize4(CMD_ACT_SPEED, value)
+        }
+
+        /**
+         * Set speed
+         * @param speed [radians/sec]
+         */
+        //% blockId="enable" block="%KeiganMotor|speed rpm" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        speedRpm(value: number) {
+            this.speed(this.rpmToRadianSec(value))
+        }
+
+        /**
+         * Run forward
+         */
+        //% blockId="runForward" block="%KeiganMotor|runForward" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        runForward() {
+            this.write(CMD_ACT_RUN_FORWARD)
+        }
+
+        /**
+         * Run Reverse
+         */
+        //% blockId="runReverse" block="%KeiganMotor|runReverse" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        runReverse() {
+            this.write(CMD_ACT_RUN_REVERSE)
+        }
+
+        /**
+         * Free // de-energize Motor
+         */
+        //% blockId="free" block="%KeiganMotor|free" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        free() {
+            this.write(CMD_ACT_FREE)
+        }
+
+        /**
+         * Stop // de-energize Motor
+         */
+        //% blockId="stop" block="%KeiganMotor|stop" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        stop() {
+            this.write(CMD_ACT_STOP)
+        }
 
     }
 
