@@ -17,7 +17,7 @@ namespace keiganmotor {
     /*
      * Set RADIO groupId 
      */
-    function setGroup(id: number) {
+    export function setGroup(id: number) {
         if (0 <= id && id <= 255) radio.setGroup(id);
     }
 
