@@ -46,6 +46,7 @@ namespace keiganmotor {
 
         id: string
         private idArray: number[]
+        group: number // radio group
 
         public velocity: number // [radians per second] 
         public position: number // [radians]
@@ -53,8 +54,6 @@ namespace keiganmotor {
 
         public rpm: number // [rotation per minute] velocity's another expression 
         public degree: number // [degree] position's another expression
-
-
 
         constructor(id: string) {
             this.id = id
