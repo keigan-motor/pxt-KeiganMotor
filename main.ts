@@ -133,7 +133,7 @@ namespace keiganmotor {
             let buf = pins.createBuffer(5 + 4)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
-            buf.setNumber(NumberFormat.UInt32BE, 5, value)
+            buf.setNumber(NumberFormat.UInt32LE, 5, value)
             radio.sendBuffer(buf)
         }
 
