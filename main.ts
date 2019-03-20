@@ -217,7 +217,7 @@ namespace keiganmotor {
         }
 
         /**
-         * Stop // de-energize Motor
+         * Stop // Set speed 0 to Motor
          */
         //% blockId="stop" block="%KeiganMotor|stop" 
         //% weight=85 blockGap=8
