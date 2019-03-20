@@ -132,8 +132,8 @@ namespace keiganmotor {
         writeSize4(command: number, value: number) {
             let buf = pins.createBuffer(5 + 4)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
-            buf.setNumber(NumberFormat.UInt8BE, 4, command)
-            buf.setNumber(NumberFormat.UInt8BE, 5, value)
+            buf.setNumber(NumberFormat.UInt8LE, 4, command)
+            buf.setNumber(NumberFormat.UInt8LE, 5, value)
             radio.sendBuffer(buf)
         }
 
@@ -144,8 +144,8 @@ namespace keiganmotor {
         writeSize2(command: number, value: number) {
             let buf = pins.createBuffer(5 + 2)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
-            buf.setNumber(NumberFormat.UInt8BE, 4, command)
-            buf.setNumber(NumberFormat.UInt8BE, 5, value)
+            buf.setNumber(NumberFormat.UInt8LE, 4, command)
+            buf.setNumber(NumberFormat.UInt8LE, 5, value)
             radio.sendBuffer(buf)
         }
 
