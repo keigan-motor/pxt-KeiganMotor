@@ -52,7 +52,7 @@ namespace keiganmotor {
     export class KeiganMotor {
 
         name: string
-        private nameArray: number[]
+        nameArray: number[]
         group: number // radio group
 
         public velocity: number // [radians per second] 
