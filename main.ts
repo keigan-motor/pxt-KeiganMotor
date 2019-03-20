@@ -14,6 +14,13 @@ enum led_state {
 //% weight=5 color=#D82317 icon="\uf110"
 namespace keiganmotor {
 
+    /*
+     * Set RADIO groupId 
+     */
+    function setGroup(id: number) {
+        if (0 <= id && id <= 255) radio.setGroup(id);
+    }
+
     const CMD_ACT_DISABLE = 0x50
     const CMD_ACT_ENABLE = 0x51
     const CMD_ACT_SPEED = 0x58
@@ -44,8 +51,8 @@ namespace keiganmotor {
      */
     export class KeiganMotor {
 
-        id: string
-        private idArray: number[]
+        name: string
+        private nameArray: number[]
         group: number // radio group
 
         public velocity: number // [radians per second] 
@@ -55,17 +62,17 @@ namespace keiganmotor {
         public rpm: number // [rotation per minute] velocity's another expression 
         public degree: number // [degree] position's another expression
 
-        constructor(id: string) {
-            this.id = id
-            this.makeIdArray()
+        constructor(name: string) {
+            this.name = name
+            this.makeNameArray()
         }
 
-        private makeIdArray() {
+        private makeNameArray() {
             let array = [0, 0, 0, 0];
             for (let index = 0; index < 4; index++) {
-                array.insertAt(index, this.id.charCodeAt(index));
+                array.insertAt(index, this.name.charCodeAt(index));
             }
-            this.idArray = array;
+            this.nameArray = array;
         }
 
         /**
@@ -107,36 +114,36 @@ namespace keiganmotor {
 
 
         /**
-         * Send command after prepending id = "XXXX" 
+         * Send command after prepending name = "XXXX" 
          * [ X X X X | CMD ]
          */
         write(command: number) {
             let buf = pins.createBuffer(5)
-            buf.write(0, pins.createBufferFromArray(this.idArray))
+            buf.write(0, pins.createBufferFromArray(this.nameArray))
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
             radio.sendBuffer(buf)
 
         }
 
         /**
-         * Send command after prepending id = "XXXX"
+         * Send command after prepending name = "XXXX"
          * [ X X X X | CMD | VALUES(BYTES) ]
          */
         writeSize4(command: number, value: number) {
             let buf = pins.createBuffer(5 + 4)
-            buf.write(0, pins.createBufferFromArray(this.idArray))
+            buf.write(0, pins.createBufferFromArray(this.nameArray))
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
             buf.setNumber(NumberFormat.UInt8BE, 5, value)
             radio.sendBuffer(buf)
         }
 
         /**
-        * Send command after prepending id = "XXXX"
+        * Send command after prepending name = "XXXX"
         * [ X X X X | CMD | VALUES(BYTES) ]
         */
         writeSize2(command: number, value: number) {
             let buf = pins.createBuffer(5 + 2)
-            buf.write(0, pins.createBufferFromArray(this.idArray))
+            buf.write(0, pins.createBufferFromArray(this.nameArray))
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
             buf.setNumber(NumberFormat.UInt8BE, 5, value)
             radio.sendBuffer(buf)
@@ -238,13 +245,13 @@ namespace keiganmotor {
      * Create a new KeiganMotor.
      * @param name included by KeiganMotor's device name
      */
-    //% blockId="KeiganMotor_create" block="KeiganMotor as name %name|with %groupeId"
+    //% blockId="KeiganMotor_create" block="KeiganMotor as name %name"
     //% weight=90 blockGap=8
     //% parts="KeiganMotor"
     //% trackArgs=0,2
-    //% blockSetVariable=strip
-    export function create(id: string): KeiganMotor {
-        let m = new KeiganMotor(id);
+    //% blockSetVariable=motormodule
+    export function create(name: string): KeiganMotor {
+        let m = new KeiganMotor(name);
         return m;
     }
 
