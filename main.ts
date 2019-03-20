@@ -17,7 +17,7 @@ namespace keiganmotor {
     /*
      * Set RADIO groupId 
      */
-    function setGroup(id: number) {
+    export function setGroup(id: number) {
         if (0 <= id && id <= 255) radio.setGroup(id);
     }
 
@@ -175,7 +175,7 @@ namespace keiganmotor {
          * Set speed
          * @param speed [radians/sec]
          */
-        //% blockId="enable" block="%KeiganMotor|speed" 
+        //% blockId="speed" block="%KeiganMotor|speed" 
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         speed(value: number) {
@@ -186,7 +186,7 @@ namespace keiganmotor {
          * Set speed
          * @param speed [radians/sec]
          */
-        //% blockId="enable" block="%KeiganMotor|speed rpm" 
+        //% blockId="speedRpm" block="%KeiganMotor|speed rpm" 
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         speedRpm(value: number) {
@@ -249,7 +249,7 @@ namespace keiganmotor {
     //% weight=90 blockGap=8
     //% parts="KeiganMotor"
     //% trackArgs=0,2
-    //% blockSetVariable=motormodule
+    //% blockSetVariable=m
     export function create(name: string): KeiganMotor {
         let m = new KeiganMotor(name);
         return m;
