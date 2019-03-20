@@ -129,11 +129,11 @@ namespace keiganmotor {
          * Send command after prepending name = "XXXX"
          * [ X X X X | CMD | VALUES(BYTES) ]
          */
-        writeSize4(command: number, value: number) {
+        writeUInt32(command: number, value: number) {
             let buf = pins.createBuffer(5 + 4)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
-            buf.setNumber(NumberFormat.UInt8LE, 4, command)
-            buf.setNumber(NumberFormat.UInt8LE, 5, value)
+            buf.setNumber(NumberFormat.UInt8BE, 4, command)
+            buf.setNumber(NumberFormat.UInt32BE, 5, value)
             radio.sendBuffer(buf)
         }
 
@@ -141,11 +141,11 @@ namespace keiganmotor {
         * Send command after prepending name = "XXXX"
         * [ X X X X | CMD | VALUES(BYTES) ]
         */
-        writeSize2(command: number, value: number) {
+        writeUInt16(command: number, value: number) {
             let buf = pins.createBuffer(5 + 2)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
-            buf.setNumber(NumberFormat.UInt8LE, 4, command)
-            buf.setNumber(NumberFormat.UInt8LE, 5, value)
+            buf.setNumber(NumberFormat.UInt8BE, 4, command)
+            buf.setNumber(NumberFormat.UInt16BE, 5, value)
             radio.sendBuffer(buf)
         }
 
@@ -179,7 +179,7 @@ namespace keiganmotor {
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         speed(value: number) {
-            this.writeSize4(CMD_ACT_SPEED, value)
+            this.writeUInt32(CMD_ACT_SPEED, value)
         }
 
         /**
