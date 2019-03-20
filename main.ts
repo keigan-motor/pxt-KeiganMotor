@@ -175,7 +175,7 @@ namespace keiganmotor {
          * Set speed
          * @param speed [radians/sec]
          */
-        //% blockId="enable" block="%KeiganMotor|speed" 
+        //% blockId="speed" block="%KeiganMotor|speed" 
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         speed(value: number) {
@@ -186,7 +186,7 @@ namespace keiganmotor {
          * Set speed
          * @param speed [radians/sec]
          */
-        //% blockId="enable" block="%KeiganMotor|speed rpm" 
+        //% blockId="speedRpm" block="%KeiganMotor|speed rpm" 
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         speedRpm(value: number) {
