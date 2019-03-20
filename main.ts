@@ -249,7 +249,7 @@ namespace keiganmotor {
     //% weight=90 blockGap=8
     //% parts="KeiganMotor"
     //% trackArgs=0,2
-    //% blockSetVariable=motormodule
+    //% blockSetVariable=m
     export function create(name: string): KeiganMotor {
         let m = new KeiganMotor(name);
         return m;
