@@ -46,6 +46,8 @@ namespace keiganmotor {
     const CMD_READ_MOTOR_MEASUREMENT = 0xB4
     // TODO const CMD_READ_IMU_MEASUREMENT = 0xB5
 
+    const CMD_LED_SET = 0xE0
+
     const CMD_OTHERS_REBOOT = 0xF0
 
     /**
@@ -128,7 +130,7 @@ namespace keiganmotor {
         }
 
         /**
-         * Send command after prepending name = "XXXX"
+         * Send command and float value after prepending name = "XXXX"
          * [ X X X X | CMD | VALUES(BYTES) ]
          */
         writeFloat32(command: number, value: number) {
@@ -139,7 +141,7 @@ namespace keiganmotor {
             radio.sendBuffer(buf)
         }
         /**
-         * Send command after prepending name = "XXXX"
+         * Send command and UInt32 value after prepending name = "XXXX"
          * [ X X X X | CMD | VALUES(BYTES) ]
          */
         writeUInt32(command: number, value: number) {
@@ -151,7 +153,7 @@ namespace keiganmotor {
         }
 
         /**
-        * Send command after prepending name = "XXXX"
+        * Send command and UInt16 value after prepending name = "XXXX"
         * [ X X X X | CMD | VALUES(BYTES) ]
         */
         writeUInt16(command: number, value: number) {
@@ -163,9 +165,24 @@ namespace keiganmotor {
         }
 
         /**
+         * Send command and UInt8 values after prepending name = "XXXX"
+         * [ X X X X | CMD | VALUES(BYTES) ]
+         */
+        writeUInt8Array(command: number, values: number[]) {
+            let buf = pins.createBuffer(5 + values.length)
+            buf.write(0, pins.createBufferFromArray(this.nameArray))
+            buf.setNumber(NumberFormat.UInt8BE, 4, command)
+            for (let i = 0; i < values.length; i++) {
+                buf.setNumber(NumberFormat.UInt8BE, 5 + i, values[i])
+            }
+
+            radio.sendBuffer(buf)
+        }
+
+        /**
          * Disable action 
          */
-        //% blockId="disable" block="%KeiganMotor|disable" 
+        //% blockId="disable" block="%KeiganMotor|disable action" 
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         disable() {
@@ -176,7 +193,7 @@ namespace keiganmotor {
         /**
          * Enable action 
          */
-        //% blockId="enable" block="%KeiganMotor|enable" 
+        //% blockId="enable" block="%KeiganMotor|enable action" 
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         enable() {
@@ -188,7 +205,7 @@ namespace keiganmotor {
          * Set speed
          * @param speed [radians/sec]
          */
-        //% blockId="speed" block="%KeiganMotor|speed %value"
+        //% blockId="speed" block="%KeiganMotor|set speed %value"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         speed(value: number) {
@@ -201,7 +218,7 @@ namespace keiganmotor {
          * Set speed rotation per minute
          * @param speed [rpm]
          */
-        //% blockId="speedRpm" block="%KeiganMotor|speed rpm %value"
+        //% blockId="speedRpm" block="%KeiganMotor|set speed(rpm) %value"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         speedRpm(value: number) {
@@ -212,7 +229,7 @@ namespace keiganmotor {
         /**
          * Run forward
          */
-        //% blockId="runForward" block="%KeiganMotor|runForward" 
+        //% blockId="runForward" block="%KeiganMotor|run forward" 
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         runForward() {
@@ -222,7 +239,7 @@ namespace keiganmotor {
         /**
          * Run Reverse
          */
-        //% blockId="runReverse" block="%KeiganMotor|runReverse" 
+        //% blockId="runReverse" block="%KeiganMotor|run reverse" 
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         runReverse() {
@@ -234,7 +251,7 @@ namespace keiganmotor {
         /**
          * Run At Velocity
          */
-        //% blockId="run" block="%KeiganMotor|run velocity %velocity"
+        //% blockId="run" block="%KeiganMotor|run at velocity %velocity"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         run(velocity: number) {
@@ -261,6 +278,22 @@ namespace keiganmotor {
             this.write(CMD_ACT_STOP)
         }
 
+        /**
+         * Set LED state to led_state and colors
+         * @param led_state
+         * @param red value between 0 and 255. eg: 255
+         * @param green value between 0 and 255. eg: 255
+         * @param blue value between 0 and 255. eg: 255
+         */
+        //% blockId="KeiganMotor_led" block="%KeiganMotor|state %led_state|red %red|green %green|blue %blue"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        led(state: led_state, red: number, green: number, blue: number) {
+            let s: number = state
+            this.writeUInt8Array(CMD_LED_SET, [s, red, green, blue])
+        }
+
+
     }
 
     /**
@@ -273,7 +306,7 @@ namespace keiganmotor {
      * Create a new KeiganMotor.
      * @param name included by KeiganMotor's device name
      */
-    //% blockId="KeiganMotor_create" block="KeiganMotor as name %name"
+    //% blockId="KeiganMotor_create" block="KeiganMotor %name"
     //% weight=90 blockGap=8
     //% parts="KeiganMotor"
     //% trackArgs=0,2
@@ -282,24 +315,6 @@ namespace keiganmotor {
         let m = new KeiganMotor(name);
         return m;
     }
-
-    /**
-     * Set LED state to led_state and colors
-     * @param led_state
-     * @param red value between 0 and 255. eg: 255
-     * @param green value between 0 and 255. eg: 255
-     * @param blue value between 0 and 255. eg: 255
-     */
-    //% weight=1
-    //% blockId="KeiganMotor_led" block="red %red|green %green|blue %blue"
-    //% advanced=true
-    export function led(state: led_state, red: number, green: number, blue: number) {
-
-    }
-
-
-
-
 
 
 }
