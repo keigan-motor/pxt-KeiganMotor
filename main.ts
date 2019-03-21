@@ -229,6 +229,18 @@ namespace keiganmotor {
             this.write(CMD_ACT_RUN_REVERSE)
         }
 
+
+
+        /**
+         * Run At Velocity
+         */
+        //% blockId="run" block="%KeiganMotor|run velocity %velocity"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        run(velocity: number) {
+            this.writeFloat32(CMD_ACT_RUN_AT_VELOCITY, velocity)
+        }
+
         /**
          * Free // de-energize Motor
          */
