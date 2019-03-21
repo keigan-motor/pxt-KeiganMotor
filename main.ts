@@ -205,49 +205,50 @@ namespace keiganmotor {
         //% parts="KeiganMotor"
         speedRpm(value: number) {
             this.speed(this.rpmToRadianSec(value))
-
-
-            /**
-             * Run forward
-             */
-            //% blockId="runForward" block="%KeiganMotor|runForward" 
-            //% weight=85 blockGap=8
-            //% parts="KeiganMotor"
-            runForward() {
-                this.write(CMD_ACT_RUN_FORWARD)
-            }
-
-            /**
-             * Run Reverse
-             */
-            //% blockId="runReverse" block="%KeiganMotor|runReverse" 
-            //% weight=85 blockGap=8
-            //% parts="KeiganMotor"
-            runReverse() {
-                this.write(CMD_ACT_RUN_REVERSE)
-            }
-
-            /**
-             * Free // de-energize Motor
-             */
-            //% blockId="free" block="%KeiganMotor|free" 
-            //% weight=85 blockGap=8
-            //% parts="KeiganMotor"
-            free() {
-                this.write(CMD_ACT_FREE)
-            }
-
-            /**
-             * Stop // Set speed 0 to Motor
-             */
-            //% blockId="stop" block="%KeiganMotor|stop" 
-            //% weight=85 blockGap=8
-            //% parts="KeiganMotor"
-            stop() {
-                this.write(CMD_ACT_STOP)
-            }
-
         }
+
+
+        /**
+         * Run forward
+         */
+        //% blockId="runForward" block="%KeiganMotor|runForward" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        runForward() {
+            this.write(CMD_ACT_RUN_FORWARD)
+        }
+
+        /**
+         * Run Reverse
+         */
+        //% blockId="runReverse" block="%KeiganMotor|runReverse" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        runReverse() {
+            this.write(CMD_ACT_RUN_REVERSE)
+        }
+
+        /**
+         * Free // de-energize Motor
+         */
+        //% blockId="free" block="%KeiganMotor|free" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        free() {
+            this.write(CMD_ACT_FREE)
+        }
+
+        /**
+         * Stop // Set speed 0 to Motor
+         */
+        //% blockId="stop" block="%KeiganMotor|stop" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        stop() {
+            this.write(CMD_ACT_STOP)
+        }
+
+    }
 
     /**
      * Convert string to char (UInt8) array
