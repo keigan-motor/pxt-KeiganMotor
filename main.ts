@@ -69,6 +69,8 @@ namespace keiganmotor {
         nameArray: number[]
         group: number // radio group
 
+        packetId: number
+
         public velocity: number // [radians per second] 
         public position: number // [radians]
         public torque: number // [N*m]
@@ -79,106 +81,118 @@ namespace keiganmotor {
         constructor(name: string) {
             this.name = name
             this.makeNameArray()
+            this.packetId = 0
+            radio.setTransmitSerialNumber(true) // Include micro:bit serial number to packet
         }
 
         private makeNameArray() {
-            let array = [0, 0, 0, 0];
+            let array = [0, 0, 0, 0]
             for (let index = 0; index < 4; index++) {
-                array.insertAt(index, this.name.charCodeAt(index));
+                array.insertAt(index, this.name.charCodeAt(index))
             }
-            this.nameArray = array;
+            this.nameArray = array
         }
 
         /**
-         * Send raw bytes array
+         * Send Buffer by RADIO
          */
-        sendRaw(bytes: number[]) {
-            let buf = pins.createBufferFromArray(bytes)
-
-            radio.sendBuffer(buf);
+        send(buf: Buffer) {
+            radio.sendBuffer(buf)
+            this.packetId++
+            if (this.packetId == 65536) this.packetId = 0
         }
-
 
         /**
          * Send command after prepending name = "XXXX" 
-         * [ X X X X | CMD ]
+         * [ X X X X | CMD | packetId ]
          */
         write(command: number) {
-            let buf = pins.createBuffer(5)
+            let buf = pins.createBuffer(7) // 4 + 1 + 2 
             buf.write(0, pins.createBufferFromArray(this.nameArray))
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
-            radio.sendBuffer(buf)
+            buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
+            this.send(buf)
 
         }
 
         /**
          * Send command and float value after prepending name = "XXXX"
-         * [ X X X X | CMD | VALUES(BYTES) ]
+         * [ X X X X | CMD | packetId | VALUES(BYTES) ]
          */
         writeFloat32(command: number, value: number) {
-            let buf = pins.createBuffer(5 + 4)
+            let buf = pins.createBuffer(7 + 4)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
-            buf.setNumber(NumberFormat.Float32BE, 5, value)
-            radio.sendBuffer(buf)
+            buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
+            buf.setNumber(NumberFormat.Float32BE, 7, value)
+            this.send(buf)
         }
         /**
          * Send command and UInt32 value after prepending name = "XXXX"
-         * [ X X X X | CMD | VALUES(BYTES) ]
+         * [ X X X X | CMD | packetId | VALUES(BYTES) ]
          */
         writeUInt32(command: number, value: number) {
-            let buf = pins.createBuffer(5 + 4)
+            let buf = pins.createBuffer(7 + 4)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
-            buf.setNumber(NumberFormat.UInt32LE, 5, value)
-            radio.sendBuffer(buf)
+            buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
+            buf.setNumber(NumberFormat.UInt32LE, 7, value)
+            this.send(buf)
         }
 
         /**
         * Send command, UInt16 and UInt32 values after prepending name = "XXXX"
-        * [ X X X X | CMD | VALUES(BYTES) ]
+        * [ X X X X | CMD | packetId | VALUE1 | VALUE2 ]
         */
         writeUInt16UInt32(command: number, value1: number, value2: number) {
-            let buf = pins.createBuffer(5 + 2 + 4)
+            let buf = pins.createBuffer(7 + 2 + 4)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
-            buf.setNumber(NumberFormat.UInt16BE, 5, value1)
-            buf.setNumber(NumberFormat.UInt32BE, 7, value2)
-            radio.sendBuffer(buf)
+            buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
+            buf.setNumber(NumberFormat.UInt16BE, 7, value1)
+            buf.setNumber(NumberFormat.UInt32BE, 9, value2)
+            this.send(buf)
         }
 
         /**
         * Send command, UInt16, UInt32, and UInt8 value after prepending name = "XXXX"
-        * [ X X X X | CMD | VALUES(BYTES) ]
+        * [ X X X X | CMD | packetId | VALUE1 | VALUE2 | VALUE3 ]
         */
         writeUInt16UInt32UInt8(command: number, value1: number, value2: number, value3: number) {
-            let buf = pins.createBuffer(5 + 2 + 4 + 1)
+            let buf = pins.createBuffer(7 + 2 + 4 + 1)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
-            buf.setNumber(NumberFormat.UInt16BE, 5, value1)
-            buf.setNumber(NumberFormat.UInt32BE, 7, value2)
-            buf.setNumber(NumberFormat.UInt8BE, 11, value3)
-            radio.sendBuffer(buf)
+            buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
+            buf.setNumber(NumberFormat.UInt16BE, 7, value1)
+            buf.setNumber(NumberFormat.UInt32BE, 9, value2)
+            buf.setNumber(NumberFormat.UInt8BE, 13, value3)
+            this.send(buf)
         }
 
+        /**
+         * Send command and UInt16 value after prepending name = "XXXX"
+         * [ X X X X | CMD | packetId | VALUE ]
+         */
         writeUInt16(command: number, value: number) {
-            let buf = pins.createBuffer(5 + 2)
+            let buf = pins.createBuffer(7 + 2)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
-            buf.setNumber(NumberFormat.UInt16BE, 5, value)
-            radio.sendBuffer(buf)
+            buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
+            buf.setNumber(NumberFormat.UInt16BE, 7, value)
+            this.send(buf)
         }
 
         /**
          * Send command and UInt8 values after prepending name = "XXXX"
-         * [ X X X X | CMD | VALUES(BYTES) ]
+         * [ X X X X | CMD | packetId | VALUES(BYTES) ]
          */
         writeUInt8Array(command: number, values: number[]) {
-            let buf = pins.createBuffer(5 + values.length)
+            let buf = pins.createBuffer(7 + values.length)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
+            buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
             for (let i = 0; i < values.length; i++) {
-                buf.setNumber(NumberFormat.UInt8BE, 5 + i, values[i])
+                buf.setNumber(NumberFormat.UInt8BE, 7 + i, values[i])
             }
 
             radio.sendBuffer(buf)
@@ -414,11 +428,6 @@ namespace keiganmotor {
 
 
     }
-
-    /**
-     * Convert string to char (UInt8) array
-     */
-
 
 
     /**
