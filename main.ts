@@ -21,6 +21,8 @@ namespace keiganmotor {
         if (0 <= id && id <= 255) radio.setGroup(id);
     }
 
+    const RPM_TO_RADIANPERSEC = 0.10471975511965977
+
     const CMD_ACT_DISABLE = 0x50
     const CMD_ACT_ENABLE = 0x51
     const CMD_ACT_SPEED = 0x58
