@@ -198,19 +198,6 @@ namespace keiganmotor {
 
 
         /**
-         * Set speed
-         * @param speed [radians/sec]
-         */
-        //% blockId="speed text" block="%KeiganMotor|speed Text %value"
-        //% weight=85 blockGap=8
-        //% parts="KeiganMotor"
-        speedText(value: string) {
-            let val = parseFloat(value)
-            this.writeUInt32(CMD_ACT_SPEED, val)
-
-        }
-
-        /**
          * Set speed rotation per minute
          * @param speed [rpm]
          */
@@ -218,7 +205,7 @@ namespace keiganmotor {
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         speedRpm(value: number) {
-            this.speed(this.rpmToRadianSec(value))
+            this.speed(RPM_TO_RADIANPERSEC * value)
         }
 
 
