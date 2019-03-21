@@ -1,11 +1,19 @@
 /**
- * LED State for KeiganMotor
+ * LED state
  */
 enum led_state {
     OFF = 0,
     ON_SOLID = 1,
     ON_FLASH = 2,
     ON_DIM = 3
+}
+
+/**
+ * Playback motion start option
+ */
+enum playback_option {
+    START_FROM_RAW = 0, // Start from the raw position.
+    START_FROM_CURRENT = 1, // Start from the current position.
 }
 
 /**
@@ -22,6 +30,8 @@ namespace keiganmotor {
     }
 
     const RPM_TO_RADIANPERSEC = 0.10471975511965977
+    const DEGREE_TO_RADIAN = 0.017453292519943295
+    const RADIAN_TO_DEGREE = 57.2957795131
 
     const CMD_ACT_DISABLE = 0x50
     const CMD_ACT_ENABLE = 0x51
@@ -80,34 +90,6 @@ namespace keiganmotor {
         }
 
         /**
-         * Unit conversion　degree -> radian
-         * @param {number} degree 
-         * @returns {number} radian
-         */
-        private degreeToRadian(degree: number) {
-            return degree * 0.017453292519943295;
-        }
-
-        /**
-         * Unit conversion　radian -> degree
-         * @param {number} radian 
-         * @returns {number} degree
-         */
-        private radianToDegree(radian: number) {
-            return radian / 0.017453292519943295;
-        }
-
-        /**
-         * Unit conversion rpm -> radian/sec 
-         * @param {number} rpm
-         * @returns {number} radian/sec
-         */
-        private rpmToRadianSec(rpm: number) {
-            //rpm ->radian/sec (Math.PI*2/60)
-            return rpm * 0.10471975511965977;
-        }
-
-        /**
          * Send raw bytes array
          */
         sendRaw(bytes: number[]) {
@@ -153,9 +135,32 @@ namespace keiganmotor {
         }
 
         /**
-        * Send command and UInt16 value after prepending name = "XXXX"
+        * Send command, UInt16 and UInt32 values after prepending name = "XXXX"
         * [ X X X X | CMD | VALUES(BYTES) ]
         */
+        writeUInt16UInt32(command: number, value1: number, value2: number) {
+            let buf = pins.createBuffer(5 + 2 + 4)
+            buf.write(0, pins.createBufferFromArray(this.nameArray))
+            buf.setNumber(NumberFormat.UInt8BE, 4, command)
+            buf.setNumber(NumberFormat.UInt16BE, 5, value1)
+            buf.setNumber(NumberFormat.UInt32BE, 7, value2)
+            radio.sendBuffer(buf)
+        }
+
+        /**
+        * Send command, UInt16, UInt32, and UInt8 value after prepending name = "XXXX"
+        * [ X X X X | CMD | VALUES(BYTES) ]
+        */
+        writeUInt16UInt32UInt8(command: number, value1: number, value2: number, value3: number) {
+            let buf = pins.createBuffer(5 + 2 + 4 + 1)
+            buf.write(0, pins.createBufferFromArray(this.nameArray))
+            buf.setNumber(NumberFormat.UInt8BE, 4, command)
+            buf.setNumber(NumberFormat.UInt16BE, 5, value1)
+            buf.setNumber(NumberFormat.UInt32BE, 7, value2)
+            buf.setNumber(NumberFormat.UInt8BE, 11, value3)
+            radio.sendBuffer(buf)
+        }
+
         writeUInt16(command: number, value: number) {
             let buf = pins.createBuffer(5 + 2)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
@@ -205,9 +210,6 @@ namespace keiganmotor {
          * Set speed
          * @param speed [radians/sec]
          */
-        //% blockId="speed" block="%KeiganMotor|set speed %value"
-        //% weight=85 blockGap=8
-        //% parts="KeiganMotor"
         speed(value: number) {
             this.writeFloat32(CMD_ACT_SPEED, value)
         }
@@ -216,7 +218,7 @@ namespace keiganmotor {
 
         /**
          * Set speed rotation per minute
-         * @param speed [rpm]
+         * @param speed [rotation/minute]
          */
         //% blockId="speedRpm" block="%KeiganMotor|set speed(rpm) %value"
         //% weight=85 blockGap=8
@@ -250,12 +252,59 @@ namespace keiganmotor {
 
         /**
          * Run At Velocity
+         * @param velocity [radian/sec]
          */
-        //% blockId="run" block="%KeiganMotor|run at velocity %velocity"
-        //% weight=85 blockGap=8
-        //% parts="KeiganMotor"
         run(velocity: number) {
             this.writeFloat32(CMD_ACT_RUN_AT_VELOCITY, velocity)
+        }
+
+        /**
+         * Run At Velocity(rpm)
+         * @param velocity [rotation/minute]
+         */
+        //% blockId="runRpm" block="%KeiganMotor|run at velocity(rpm) %velocity"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        runRpm(velocity: number) {
+            this.run(RPM_TO_RADIANPERSEC * velocity)
+        }
+
+        /**
+        * Move To Position
+        * @param position [radian]
+        */
+        moveTo(position: number) {
+            this.writeFloat32(CMD_ACT_MOVE_TO_POSITION, position)
+        }
+
+        /**
+         * Move To Position
+         * @param position [degree]
+         */
+        //% blockId="moveToDeg" block="%KeiganMotor|move to position(degree) %position"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        moveToDeg(position: number) {
+            this.moveTo(RADIAN_TO_DEGREE * position)
+        }
+
+        /**
+        * Move By Distance
+        * @param distance [radian]
+        */
+        moveBy(distance: number) {
+            this.writeFloat32(CMD_ACT_MOVE_BY_DISTANCE, distance)
+        }
+
+        /**
+         * Move To Position
+         * @param distance [degree]
+         */
+        //% blockId="moveByDeg" block="%KeiganMotor|move by distance(degree) %position"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        moveByDeg(distance: number) {
+            this.moveBy(RADIAN_TO_DEGREE * distance)
         }
 
         /**
@@ -276,6 +325,76 @@ namespace keiganmotor {
         //% parts="KeiganMotor"
         stop() {
             this.write(CMD_ACT_STOP)
+        }
+
+        /**
+         * Erase Motion at Index
+         * @param index 
+         */
+        //% blockId="eraseMotion" block="%KeiganMotor|erase motion at index %index"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        eraseMotion(index: number) {
+            this.writeUInt16(CMD_DT_ERASE_MOTION, index)
+        }
+
+        /**
+         * Start Teaching Motion at Index
+         * @param index 
+         * @param time [milliseconds]
+         */
+        //% blockId="startTeachingMotion" block="%KeiganMotor|start teaching motion at index %index"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        startTeachingMotion(index: number, time: number) {
+            this.writeUInt16UInt32(CMD_DT_START_TEACH_MOTION, index, time)
+        }
+
+        /**
+         * Stop Teaching Motion
+         */
+        //% blockId="stopTeachingMotion" block="%KeiganMotor|stop teaching motion"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        stopTeachingMotion() {
+            this.write(CMD_DT_STOP_TEACH_MOTION)
+        }
+
+
+
+        /**
+         * Prepare Playback Motion at Index
+         * @param index 
+         * @param repeating // times
+         * @param option // playback start option 
+         */
+        //% blockId="preparePlaybackMotion" block="%KeiganMotor|prepare playback motion at index %index"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        preparePlaybackMotion(index: number, repeating: number, option: playback_option) {
+            let start_op: number = option
+            this.writeUInt16UInt32UInt8(CMD_ACT_PREPARE_PLAYBACK_MOTION, index, repeating, start_op)
+        }
+
+
+        /**
+         * Start Playback Motion at Index
+         */
+        //% blockId="startPlaybackMotion" block="%KeiganMotor|start playback motion"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        startPlaybackMotion() {
+            this.write(CMD_ACT_START_PLAYBACK_MOTION_FROM_PREP)
+        }
+
+        /**
+         * Stop Playback Motion at Index
+         */
+        //% blockId="stopPlaybackMotion" block="%KeiganMotor|stop playback motion"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        stopPlaybackMotion() {
+            this.write(CMD_ACT_STOP_PLAYBACK_MOTION)
         }
 
         /**
