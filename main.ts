@@ -129,6 +129,17 @@ namespace keiganmotor {
          * Send command after prepending name = "XXXX"
          * [ X X X X | CMD | VALUES(BYTES) ]
          */
+        writeFloat32(command: number, value: number) {
+            let buf = pins.createBuffer(5 + 4)
+            buf.write(0, pins.createBufferFromArray(this.nameArray))
+            buf.setNumber(NumberFormat.UInt8BE, 4, command)
+            buf.setNumber(NumberFormat.Float32BE, 5, value)
+            radio.sendBuffer(buf)
+        }
+        /**
+         * Send command after prepending name = "XXXX"
+         * [ X X X X | CMD | VALUES(BYTES) ]
+         */
         writeUInt32(command: number, value: number) {
             let buf = pins.createBuffer(5 + 4)
             buf.write(0, pins.createBufferFromArray(this.nameArray))
@@ -179,7 +190,7 @@ namespace keiganmotor {
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         speed(value: number) {
-            this.writeUInt32(CMD_ACT_SPEED, value)
+            this.writeFloat32(CMD_ACT_SPEED, value)
         }
 
 
@@ -194,6 +205,7 @@ namespace keiganmotor {
         speedText(value: string) {
             let val = parseFloat(value)
             this.writeUInt32(CMD_ACT_SPEED, val)
+
         }
 
         /**
@@ -205,49 +217,50 @@ namespace keiganmotor {
         //% parts="KeiganMotor"
         speedRpm(value: number) {
             this.speed(this.rpmToRadianSec(value))
-
-
-            /**
-             * Run forward
-             */
-            //% blockId="runForward" block="%KeiganMotor|runForward" 
-            //% weight=85 blockGap=8
-            //% parts="KeiganMotor"
-            runForward() {
-                this.write(CMD_ACT_RUN_FORWARD)
-            }
-
-            /**
-             * Run Reverse
-             */
-            //% blockId="runReverse" block="%KeiganMotor|runReverse" 
-            //% weight=85 blockGap=8
-            //% parts="KeiganMotor"
-            runReverse() {
-                this.write(CMD_ACT_RUN_REVERSE)
-            }
-
-            /**
-             * Free // de-energize Motor
-             */
-            //% blockId="free" block="%KeiganMotor|free" 
-            //% weight=85 blockGap=8
-            //% parts="KeiganMotor"
-            free() {
-                this.write(CMD_ACT_FREE)
-            }
-
-            /**
-             * Stop // Set speed 0 to Motor
-             */
-            //% blockId="stop" block="%KeiganMotor|stop" 
-            //% weight=85 blockGap=8
-            //% parts="KeiganMotor"
-            stop() {
-                this.write(CMD_ACT_STOP)
-            }
-
         }
+
+
+        /**
+         * Run forward
+         */
+        //% blockId="runForward" block="%KeiganMotor|runForward" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        runForward() {
+            this.write(CMD_ACT_RUN_FORWARD)
+        }
+
+        /**
+         * Run Reverse
+         */
+        //% blockId="runReverse" block="%KeiganMotor|runReverse" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        runReverse() {
+            this.write(CMD_ACT_RUN_REVERSE)
+        }
+
+        /**
+         * Free // de-energize Motor
+         */
+        //% blockId="free" block="%KeiganMotor|free" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        free() {
+            this.write(CMD_ACT_FREE)
+        }
+
+        /**
+         * Stop // Set speed 0 to Motor
+         */
+        //% blockId="stop" block="%KeiganMotor|stop" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        stop() {
+            this.write(CMD_ACT_STOP)
+        }
+
+    }
 
     /**
      * Convert string to char (UInt8) array
