@@ -83,6 +83,7 @@ namespace keiganmotor {
             this.makeNameArray()
             this.packetId = 0
             radio.setTransmitSerialNumber(true) // Include micro:bit serial number to packet
+            radio.setGroup(1) // TODO
         }
 
         private makeNameArray() {
