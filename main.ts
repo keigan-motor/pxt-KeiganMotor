@@ -54,7 +54,7 @@ namespace keiganmotor {
     const CMD_OTHERS_REBOOT = 0xF0
 
 
-    let mArray: KeiganMotor[] // Array to put KeiganMotor
+    let mArray: KeiganMotor[] = [] // Array to put KeiganMotor
     let mIndex: number
 
     /**
@@ -67,8 +67,9 @@ namespace keiganmotor {
     //% trackArgs=0,2
     //% blockSetVariable=m
     export function create(name: string): KeiganMotor {
-        let m = new KeiganMotor(name);
-        return m;
+        let m = new KeiganMotor(name)
+        addKeiganMotor(m)
+        return m
     }
 
     /*
@@ -87,7 +88,22 @@ namespace keiganmotor {
         mIndex++
     }
 
+    /**
+     * This is an event handler block
+     */
+    //% block="on event"
+    export function onReadMotorMeasurement(handler: () => void) {
+
+    }
+
+    //% blockId=onButtonEvent block="on button %button|is %event" blockExternalInputs=false
+    /*export function onButtonEvent(button: JoystickBitPin, event: ButtonType, handler: Action): void {
+        pins.onPulsed(<number>button, <number>event, handler);
+    }
+    */
+
     radio.onReceivedBuffer(function (receivedBuffer: Buffer) {
+        let sender = receivedBuffer.slice(7, 4)
         let cmd = receivedBuffer.getNumber(NumberFormat.UInt8BE, 4)
         let pos = receivedBuffer.getNumber(NumberFormat.Float32BE, 5)
         let vel = receivedBuffer.getNumber(NumberFormat.Float32BE, 9)
@@ -107,6 +123,7 @@ namespace keiganmotor {
 
         name: string
         nameArray: number[]
+        nameBuffer: Buffer
         group: number // TODO radio group
         index: number // index in mArray
 
@@ -125,7 +142,6 @@ namespace keiganmotor {
             this.packetId = 0
             radio.setTransmitSerialNumber(true) // Include micro:bit serial number to packet
             radio.setGroup(1) // TODO
-            addKeiganMotor(this)
         }
 
         private makeNameArray() {
@@ -134,6 +150,7 @@ namespace keiganmotor {
                 array.insertAt(index, this.name.charCodeAt(index))
             }
             this.nameArray = array
+            this.nameBuffer = pins.createBufferFromArray(array)
         }
 
         /**
