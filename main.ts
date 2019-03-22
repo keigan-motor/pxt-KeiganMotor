@@ -22,13 +22,6 @@ enum playback_option {
 //% weight=5 color=#D82317 icon="\uf110"
 namespace keiganmotor {
 
-    /*
-     * Set RADIO groupId 
-     */
-    export function setGroup(id: number) {
-        if (0 <= id && id <= 255) radio.setGroup(id);
-    }
-
     const RPM_TO_RADIANPERSEC = 0.10471975511965977
     const DEGREE_TO_RADIAN = 0.017453292519943295
     const RADIAN_TO_DEGREE = 57.2957795131
@@ -60,6 +53,53 @@ namespace keiganmotor {
 
     const CMD_OTHERS_REBOOT = 0xF0
 
+
+    let mArray: KeiganMotor[] // Array to put KeiganMotor
+    let mIndex: number
+
+    /**
+     * Create a new KeiganMotor.
+     * @param name included by KeiganMotor's device name
+     */
+    //% blockId="KeiganMotor_create" block="KeiganMotor %name"
+    //% weight=90 blockGap=8
+    //% parts="KeiganMotor"
+    //% trackArgs=0,2
+    //% blockSetVariable=m
+    export function create(name: string): KeiganMotor {
+        let m = new KeiganMotor(name);
+        return m;
+    }
+
+    /*
+     * Set RADIO groupId 
+     */
+    export function setGroup(id: number) {
+        if (0 <= id && id <= 255) radio.setGroup(id);
+    }
+
+    /*
+     * Add KeiganMotor to mArray
+     */
+    export function addKeiganMotor(motor: KeiganMotor) {
+        mArray[mIndex] = motor
+        motor.index = mIndex
+        mIndex++
+    }
+
+    radio.onReceivedBuffer(function (receivedBuffer: Buffer) {
+        let cmd = receivedBuffer.getNumber(NumberFormat.UInt8BE, 4)
+        let pos = receivedBuffer.getNumber(NumberFormat.Float32BE, 5)
+        let vel = receivedBuffer.getNumber(NumberFormat.Float32BE, 9)
+        let trq = receivedBuffer.getNumber(NumberFormat.Float32BE, 13)
+        //let hex = receivedBuffer.toHex()
+        //console.log(hex)
+        console.logValue("pos", pos)
+        console.logValue("vel", vel)
+        console.logValue("trq", trq)
+        //basic.showNumber(pos)
+    })
+
     /**
      * A KeiganMotor
      */
@@ -68,6 +108,7 @@ namespace keiganmotor {
         name: string
         nameArray: number[]
         group: number // radio group
+        index: number // index in mArray
 
         packetId: number
 
@@ -84,6 +125,7 @@ namespace keiganmotor {
             this.packetId = 0
             radio.setTransmitSerialNumber(true) // Include micro:bit serial number to packet
             radio.setGroup(1) // TODO
+            addKeiganMotor(this)
         }
 
         private makeNameArray() {
@@ -300,7 +342,7 @@ namespace keiganmotor {
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         moveToDeg(position: number) {
-            this.moveTo(RADIAN_TO_DEGREE * position)
+            this.moveTo(DEGREE_TO_RADIAN * position)
         }
 
         /**
@@ -319,7 +361,7 @@ namespace keiganmotor {
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         moveByDeg(distance: number) {
-            this.moveBy(RADIAN_TO_DEGREE * distance)
+            this.moveBy(DEGREE_TO_RADIAN * distance)
         }
 
         /**
@@ -428,22 +470,9 @@ namespace keiganmotor {
         }
 
 
+
     }
 
-
-    /**
-     * Create a new KeiganMotor.
-     * @param name included by KeiganMotor's device name
-     */
-    //% blockId="KeiganMotor_create" block="KeiganMotor %name"
-    //% weight=90 blockGap=8
-    //% parts="KeiganMotor"
-    //% trackArgs=0,2
-    //% blockSetVariable=m
-    export function create(name: string): KeiganMotor {
-        let m = new KeiganMotor(name);
-        return m;
-    }
 
 
 }
