@@ -107,7 +107,7 @@ namespace keiganmotor {
 
         name: string
         nameArray: number[]
-        group: number // radio group
+        group: number // TODO radio group
         index: number // index in mArray
 
         packetId: number
@@ -357,7 +357,7 @@ namespace keiganmotor {
          * Move To Position
          * @param distance [degree]
          */
-        //% blockId="moveByDeg" block="%KeiganMotor|move by distance(degree) %position"
+        //% blockId="moveByDeg" block="%KeiganMotor|move by distance(degree) %distance"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         moveByDeg(distance: number) {
