@@ -22,12 +22,6 @@ enum playback_option {
 //% weight=5 color=#D82317 icon="\uf110"
 namespace keiganmotor {
 
-    /*
-     * Set RADIO groupId 
-     */
-    export function setGroup(id: number) {
-        if (0 <= id && id <= 255) radio.setGroup(id);
-    }
 
     const RPM_TO_RADIANPERSEC = 0.10471975511965977
     const DEGREE_TO_RADIAN = 0.017453292519943295
@@ -60,6 +54,21 @@ namespace keiganmotor {
 
     const CMD_OTHERS_REBOOT = 0xF0
 
+    /*
+     * Set RADIO groupId 
+     */
+    export function setGroup(id: number) {
+        if (0 <= id && id <= 255) radio.setGroup(id);
+    }
+
+    export function incrementMotorModules(m: KeiganMotor) {
+        mArray[mIndex] = m
+        mIndex++;
+    }
+
+    export let mArray: KeiganMotor[]
+    let mIndex: number = 0
+
     /**
      * A KeiganMotor
      */
@@ -68,6 +77,8 @@ namespace keiganmotor {
         name: string
         nameArray: number[]
         group: number // radio group
+
+        arrayIndex: number
 
         packetId: number
 
@@ -83,6 +94,8 @@ namespace keiganmotor {
             this.makeNameArray()
             this.packetId = 0
             radio.setTransmitSerialNumber(true) // Include micro:bit serial number to packet
+            radio.setGroup(1) // TODO
+            mArray[mIndex] = this
         }
 
         private makeNameArray() {
@@ -299,7 +312,7 @@ namespace keiganmotor {
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         moveToDeg(position: number) {
-            this.moveTo(RADIAN_TO_DEGREE * position)
+            this.moveTo(DEGREE_TO_RADIAN * position)
         }
 
         /**
@@ -314,11 +327,11 @@ namespace keiganmotor {
          * Move To Position
          * @param distance [degree]
          */
-        //% blockId="moveByDeg" block="%KeiganMotor|move by distance(degree) %position"
+        //% blockId="moveByDeg" block="%KeiganMotor|move by distance(distance) %distance"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         moveByDeg(distance: number) {
-            this.moveBy(RADIAN_TO_DEGREE * distance)
+            this.moveBy(DEGREE_TO_RADIAN * distance)
         }
 
         /**
@@ -375,7 +388,6 @@ namespace keiganmotor {
         }
 
 
-
         /**
          * Prepare Playback Motion at Index
          * @param index 
@@ -426,10 +438,38 @@ namespace keiganmotor {
             this.writeUInt8Array(CMD_LED_SET, [s, red, green, blue])
         }
 
+        /**
+         * Read Motor Measurement // Read position[rad], velocity[rad/s], torque[N*m]
+         */
+        //% blockId="readMotorMeasurement" block="%KeiganMotor|read motor measurement"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        readMotorMeasurement() {
+            this.write(CMD_READ_MOTOR_MEASUREMENT)
+        }
+
 
     }
 
 
+    radio.onReceivedBuffer(function (receivedBuffer: Buffer) {
+        let cmd = receivedBuffer.getNumber(NumberFormat.UInt8BE, 4)
+        let pos = receivedBuffer.getNumber(NumberFormat.Float32BE, 5)
+        let vel = receivedBuffer.getNumber(NumberFormat.Float32BE, 9)
+        let trq = receivedBuffer.getNumber(NumberFormat.Float32BE, 13)
+        //let hex = receivedBuffer.toHex()
+        //console.log(hex)
+        console.logValue("pos", pos)
+        console.logValue("vel", vel)
+        console.logValue("trq", trq)
+        //basic.showNumber(pos)
+    })
+
+    /*
+        radio.onDataPacketReceived(function (packet: radio.Packet) {
+            console.log("received")
+        })
+    */
     /**
      * Create a new KeiganMotor.
      * @param name included by KeiganMotor's device name
