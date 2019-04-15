@@ -78,6 +78,7 @@ namespace keiganmotor {
 
 
     //let mArray: KeiganMotor[] = [] // Array to put KeiganMotor
+
     let mIndex: number
 
     /**
@@ -91,7 +92,9 @@ namespace keiganmotor {
     //% blockSetVariable=m
     export function create(name: string): KeiganMotor {
         let m = new KeiganMotor(name)
+
         //addKeiganMotor(m)
+
         return m
     }
 
@@ -133,6 +136,7 @@ namespace keiganmotor {
         let pos = posBuffer.getNumber(NumberFormat.Float32BE, 0)
         let vel = velBuffer.getNumber(NumberFormat.Float32BE, 0)
         let trq = trqBuffer.getNumber(NumberFormat.Float32BE, 0)
+
 
         console.logValue("pos", pos)
         console.logValue("vel", vel)
