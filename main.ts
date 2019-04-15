@@ -1,4 +1,24 @@
 /**
+ * This extension enables to control KeiganMotor via "RADIO"
+ * 
+ * Refer to https://ukbaz.github.io/howto/ubit_radio.html
+ * to know RADIO Packet data structure
+ * 
+ * Packet Spec:
+ * 0  1  2     | 3              | 4 ... 7       | 8 ... 11          | 12 ... 31
+ * --------------------------------------------------------------------------
+ * dal header  | packet type    | system time   | serial number     | payload
+ *
+ * --- DAL HEADER
+    01                      raw payload
+    00                      group number
+    01                      version 1
+ * 
+ * Packet from KeiganMotor also meets this packet structure.
+ * The serial number is KeiganMotor's serial number.
+ */
+
+/**
  * LED state
  */
 enum led_state {
@@ -25,6 +45,9 @@ namespace keiganmotor {
     const RPM_TO_RADIANPERSEC = 0.10471975511965977
     const DEGREE_TO_RADIAN = 0.017453292519943295
     const RADIAN_TO_DEGREE = 57.2957795131
+
+    const CMD_REG_MAX_SPEED = 0x02
+    const CMD_REG_MAX_TORQUE = 0x0E
 
     const CMD_ACT_DISABLE = 0x50
     const CMD_ACT_ENABLE = 0x51
@@ -54,7 +77,8 @@ namespace keiganmotor {
     const CMD_OTHERS_REBOOT = 0xF0
 
 
-    let mArray: KeiganMotor[] = [] // Array to put KeiganMotor
+    //let mArray: KeiganMotor[] = [] // Array to put KeiganMotor
+
     let mIndex: number
 
     /**
@@ -68,7 +92,9 @@ namespace keiganmotor {
     //% blockSetVariable=m
     export function create(name: string): KeiganMotor {
         let m = new KeiganMotor(name)
-        addKeiganMotor(m)
+
+        //addKeiganMotor(m)
+
         return m
     }
 
@@ -82,39 +108,58 @@ namespace keiganmotor {
     /*
      * Add KeiganMotor to mArray
      */
-    export function addKeiganMotor(motor: KeiganMotor) {
-        mArray[mIndex] = motor
-        motor.index = mIndex
-        mIndex++
-    }
+
+    /*
+        export function addKeiganMotor(motor: KeiganMotor) {
+            mArray[mIndex] = motor
+            motor.index = mIndex
+            mIndex++
+        }
+    */
 
     /**
      * This is an event handler block
      */
     //% block="on event"
-    export function onReadMotorMeasurement(handler: () => void) {
+    export function onReceivedMotorMeasurement(module: KeiganMotor, position: number, velocity: number, torque: number) {
+
 
     }
 
-    //% blockId=onButtonEvent block="on button %button|is %event" blockExternalInputs=false
-    /*export function onButtonEvent(button: JoystickBitPin, event: ButtonType, handler: Action): void {
-        pins.onPulsed(<number>button, <number>event, handler);
-    }
-    */
 
     radio.onReceivedBuffer(function (receivedBuffer: Buffer) {
-        let sender = receivedBuffer.slice(7, 4)
-        let cmd = receivedBuffer.getNumber(NumberFormat.UInt8BE, 4)
-        let pos = receivedBuffer.getNumber(NumberFormat.Float32BE, 5)
-        let vel = receivedBuffer.getNumber(NumberFormat.Float32BE, 9)
-        let trq = receivedBuffer.getNumber(NumberFormat.Float32BE, 13)
-        //let hex = receivedBuffer.toHex()
-        //console.log(hex)
+        //let sender = receivedBuffer.slice(0, 4)
+        
+        let posBuffer = receivedBuffer.slice(5, 4)
+        let velBuffer = receivedBuffer.slice(9, 4)
+        let trqBuffer = receivedBuffer.slice(13, 4)
+        let pos = posBuffer.getNumber(NumberFormat.Float32BE, 0)
+        let vel = velBuffer.getNumber(NumberFormat.Float32BE, 0)
+        let trq = trqBuffer.getNumber(NumberFormat.Float32BE, 0)
+
+
         console.logValue("pos", pos)
         console.logValue("vel", vel)
         console.logValue("trq", trq)
+
+        //let cmd = receivedBuffer.getNumber(NumberFormat.UInt8BE, 4)
+        //let pb = receivedBuffer.slice(5, 4)
+        ////let pos = pb.getNumber(NumberFormat.Float32BE, 0)
+        //let pos = receivedBuffer.getNumber(NumberFormat.Float32BE, 5)
+        //let vel = receivedBuffer.getNumber(NumberFormat.Float32BE, 9)
+        //let trq = receivedBuffer.getNumber(NumberFormat.Float32BE, 13)
+        //let hex = receivedBuffer.toHex()
+        //console.log(hex)
+        //let len = receivedBuffer.length
+        //console.logValue("len", len)
+        //console.logValue("pos", pos)
+        //console.logValue("vel", vel)
+        //console.logValue("trq", trq)
         //basic.showNumber(pos)
+        //onReceivedMotorMeasurement()
     })
+
+
 
     /**
      * A KeiganMotor
@@ -256,6 +301,28 @@ namespace keiganmotor {
             }
 
             radio.sendBuffer(buf)
+        }
+
+        /**
+         * Set Max Torque
+         * @param torque [N*m]
+         */
+        //% blockId="mxTorque" block="%KeiganMotor|set max torque(N*m) %value"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        maxTorque(value: number) {
+            this.writeFloat32(CMD_REG_MAX_TORQUE, value)
+        }
+
+        /**
+         * Read Motor Measurement (Position, Velocity and Torque) 
+         */
+        //% blockId="readMotor" block="%KeiganMotor|Read Motor Measurement" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        readMotorMeasurement() {
+            this.write(CMD_READ_MOTOR_MEASUREMENT)
+
         }
 
         /**
@@ -408,6 +475,7 @@ namespace keiganmotor {
         //% blockId="eraseMotion" block="%KeiganMotor|erase motion at index %index"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
+        //% advanced=true
         eraseMotion(index: number) {
             this.writeUInt16(CMD_DT_ERASE_MOTION, index)
         }
@@ -420,6 +488,7 @@ namespace keiganmotor {
         //% blockId="startTeachingMotion" block="%KeiganMotor|start teaching motion at index %index"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
+        //% advanced=true
         startTeachingMotion(index: number, time: number) {
             this.writeUInt16UInt32(CMD_DT_START_TEACH_MOTION, index, time)
         }
@@ -430,6 +499,7 @@ namespace keiganmotor {
         //% blockId="stopTeachingMotion" block="%KeiganMotor|stop teaching motion"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
+        //% advanced=true
         stopTeachingMotion() {
             this.write(CMD_DT_STOP_TEACH_MOTION)
         }
@@ -445,6 +515,7 @@ namespace keiganmotor {
         //% blockId="preparePlaybackMotion" block="%KeiganMotor|prepare playback motion at index %index"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
+        //% advanced=true
         preparePlaybackMotion(index: number, repeating: number, option: playback_option) {
             let start_op: number = option
             this.writeUInt16UInt32UInt8(CMD_ACT_PREPARE_PLAYBACK_MOTION, index, repeating, start_op)
@@ -457,6 +528,7 @@ namespace keiganmotor {
         //% blockId="startPlaybackMotion" block="%KeiganMotor|start playback motion"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
+        //% advanced=true
         startPlaybackMotion() {
             this.write(CMD_ACT_START_PLAYBACK_MOTION_FROM_PREP)
         }
@@ -486,6 +558,15 @@ namespace keiganmotor {
             this.writeUInt8Array(CMD_LED_SET, [s, red, green, blue])
         }
 
+        /**
+         * Reboot
+         */
+        //% blockId="reboot" block="%KeiganMotor|reboot"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        reboot() {
+            this.write(CMD_OTHERS_REBOOT)
+        }
 
 
     }
