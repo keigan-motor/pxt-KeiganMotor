@@ -76,11 +76,15 @@ namespace keiganmotor {
 
     const CMD_OTHERS_REBOOT = 0xF0
 
+    const RECEIVE_TYPE_READ = 0x40
+    const RECEIVE_TYPE_ERROR = 0xBE
+    const RECEIVE_TYPE_MOTOR_MEASUREMENT = CMD_READ_MOTOR_MEASUREMENT
+    // TODO const RECEIVE_TYPE_IMU_MEASUREMENT = CMD_READ_IMU_MEASUREMENT
 
-    let mArray: KeiganMotor[] = [] // Array to put KeiganMotor
-    let mNumber: number[] = [] // Array to put Number array from KeiganMotor's device name
+    let motorArray: KeiganMotor[] = [] // Array to put KeiganMotor
+    let serialNumberArray: number[] = [] // Array to put Number array from KeiganMotor's device name
 
-    let mIndex: number
+    let mIndex: number = 0
 
     /**
      * Create a new KeiganMotor.
@@ -114,8 +118,8 @@ namespace keiganmotor {
 
 
     export function addKeiganMotor(m: KeiganMotor) {
-        mArray[mIndex] = m // Add KeiganMotor to mArray
-        mNumber[mIndex] = parseInt(m.name) // Add its name to mName
+        motorArray[mIndex] = m 
+        serialNumberArray[mIndex] = m.serialNumber 
         mIndex++
     }
 
@@ -129,55 +133,110 @@ namespace keiganmotor {
 
     }
 
+
+    radio.onDataPacketReceived(function (packet: radio.Packet) {
+        let s = packet.serial
+        let b = packet.receivedBuffer
+        //let nameBuffer = pins.createBuffer(4)
+        //nameBuffer.setNumber(NumberFormat.UInt32BE, 0, s)
+        console.logValue("packet.serial", s)
+        console.logValue("array[0]", serialNumberArray[0])
+        if (s == serialNumberArray[0]){
+            console.log("matched")
+        } else {
+            console.log("Not matched")
+        }
+        let index = serialNumberArray.indexOf(s)
+        console.logValue("index", index)
+
+        if (index >= 0) {
+            console.log("success")
+        } else {
+            console.log("Not found")
+            return
+        }
+        //let m = mArray[mIndex]
+        //console.log(nameNumber.toString())
+        /*
+        console.logValue("number", nameNumber)
+        if (mBuffer.length > 0) {
+            console.logValue("mNumber", mBuffer[0].getNumber(NumberFormat.Float32BE, 0))
+        }
+
+    })
+
+
+    /*
     radio.onReceivedBuffer(function (receivedBuffer: Buffer) {
         //let sender = receivedBuffer.slice(0, 4)
         // let len = receivedBuffer.getNumber(NumberFormat.UInt8BE, 0)
+
+        //let nameBuffer = pins.createBuffer(4)
+        //nameBuffer.setNumber(NumberFormat.Float32BE, 0, nameNumber)
+        
+        let a = nameBuffer.getNumber(NumberFormat.UInt8BE, 0)
+        let b = nameBuffer.getNumber(NumberFormat.UInt8BE, 1)
+        let c = nameBuffer.getNumber(NumberFormat.UInt8BE, 2)
+        let d = nameBuffer.getNumber(NumberFormat.UInt8BE, 3)
+        let array = [a, b, c, d]
+        console.log(a.toString())
+        
+        //console.log("name:")
+        //console.log(nameText)
+
+        //let mIndex = mNumber.indexOf(nameNumber)
+        //let m = mArray[mIndex]
+        //console.log(nameNumber.toString())
         /*
-        let nameNumber = radio.receivedSerial()
-        let mIndex = mNumber.indexOf(nameNumber)
-        let m = mArray[mIndex]
-        console.log(m.name)
+        console.logValue("number", nameNumber)
+        if (mBuffer.length > 0) {
+            console.logValue("mNumber", mBuffer[0].getNumber(NumberFormat.Float32BE, 0))
+        }
         */
 
-        // Initialize 4 bytes buffer
-        // NOTE) getNumber(NumberFormat.Float32BE, 0) causes the following error without these initialize.
-        // error: "Floar32Array should be multiple of 4" 
-        let posBuffer = pins.createBuffer(4)
-        let velBuffer = pins.createBuffer(4)
-        let trqBuffer = pins.createBuffer(4)
 
-        let posSourceBuffer = receivedBuffer.slice(5, 4)
-        let velSourceBuffer = receivedBuffer.slice(9, 4)
-        let trqSourceBuffer = receivedBuffer.slice(13, 4)
 
-        posBuffer.write(0, posSourceBuffer)
-        velBuffer.write(0, velSourceBuffer)
-        trqBuffer.write(0, trqSourceBuffer)
+        /*
+                let cmd = receivedBuffer.getNumber(NumberFormat.UInt8BE, 4)
+        
+                switch (cmd) {
+                    case RECEIVE_TYPE_READ:
+                        break;
+                    case RECEIVE_TYPE_ERROR:
+                        break;
+                    case CMD_READ_MOTOR_MEASUREMENT:
+                        // Initialize 4 bytes buffer
+                        // NOTE) getNumber(NumberFormat.Float32BE, 0) causes the following error without these initialize.
+                        // error: "Floar32Array should be multiple of 4" 
+                        let posBuffer = pins.createBuffer(4)
+                        let velBuffer = pins.createBuffer(4)
+                        let trqBuffer = pins.createBuffer(4)
+        
+                        let posSourceBuffer = receivedBuffer.slice(5, 4)
+                        let velSourceBuffer = receivedBuffer.slice(9, 4)
+                        let trqSourceBuffer = receivedBuffer.slice(13, 4)
+        
+                        posBuffer.write(0, posSourceBuffer)
+                        velBuffer.write(0, velSourceBuffer)
+                        trqBuffer.write(0, trqSourceBuffer)
+        
+                        let pos = posBuffer.getNumber(NumberFormat.Float32BE, 0)
+                        let vel = velBuffer.getNumber(NumberFormat.Float32BE, 0)
+                        let trq = trqBuffer.getNumber(NumberFormat.Float32BE, 0)
+        
+                        console.logValue("pos", pos)
+                        console.logValue("vel", vel)
+                        console.logValue("trq", trq)
+                        break;
+                    default:
+                        break;
+        
+                }
+              
 
-        let pos = posBuffer.getNumber(NumberFormat.Float32BE, 0)
-        let vel = velBuffer.getNumber(NumberFormat.Float32BE, 0)
-        let trq = trqBuffer.getNumber(NumberFormat.Float32BE, 0)
-
-        console.logValue("pos", pos)
-        console.logValue("vel", vel)
-        console.logValue("trq", trq)
-
-        //let cmd = receivedBuffer.getNumber(NumberFormat.UInt8BE, 4)
-        //let pb = receivedBuffer.slice(5, 4)
-        ////let pos = pb.getNumber(NumberFormat.Float32BE, 0)
-        //let pos = receivedBuffer.getNumber(NumberFormat.Float32BE, 5)
-        //let vel = receivedBuffer.getNumber(NumberFormat.Float32BE, 9)
-        //let trq = receivedBuffer.getNumber(NumberFormat.Float32BE, 13)
-        //let hex = receivedBuffer.toHex()
-        //console.log(hex)
-        //let len = receivedBuffer.length
-        //console.logValue("len", len)
-        //console.logValue("pos", pos)
-        //console.logValue("vel", vel)
-        //console.logValue("trq", trq)
-        //basic.showNumber(pos)
-        //onReceivedMotorMeasurement()
+*/
     })
+
 
 
 
@@ -187,9 +246,10 @@ namespace keiganmotor {
     export class KeiganMotor {
 
         name: string
-        nameArray: number[]
         nameBuffer: Buffer
-        group: number // TODO radio group
+        serialNumber:number
+
+        group: number 
 
         packetId: number
 
@@ -202,19 +262,19 @@ namespace keiganmotor {
 
         constructor(name: string) {
             this.name = name
-            this.makeNameArray()
+            this.makeNameBuffer()
             this.packetId = 0
             radio.setTransmitSerialNumber(true) // Include micro:bit serial number to packet
             radio.setGroup(1) // TODO
         }
 
-        private makeNameArray() {
-            let array = [0, 0, 0, 0]
+        private makeNameBuffer() {
+            let buf = pins.createBuffer(4)
             for (let index = 0; index < 4; index++) {
-                array.insertAt(index, this.name.charCodeAt(index))
+                buf.setNumber(NumberFormat.UInt8BE, index, this.name.charCodeAt(index))
             }
-            this.nameArray = array
-            this.nameBuffer = pins.createBufferFromArray(array)
+            this.nameBuffer = buf
+            this.serialNumber = buf.getNumber(NumberFormat.UInt32LE, 0)
         }
 
         /**
@@ -232,7 +292,7 @@ namespace keiganmotor {
          */
         write(command: number) {
             let buf = pins.createBuffer(7) // 4 + 1 + 2 
-            buf.write(0, pins.createBufferFromArray(this.nameArray))
+            buf.write(0, this.nameBuffer)
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
             buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
             this.send(buf)
@@ -245,7 +305,7 @@ namespace keiganmotor {
          */
         writeFloat32(command: number, value: number) {
             let buf = pins.createBuffer(7 + 4)
-            buf.write(0, pins.createBufferFromArray(this.nameArray))
+            buf.write(0, this.nameBuffer)
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
             buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
             buf.setNumber(NumberFormat.Float32BE, 7, value)
@@ -257,7 +317,7 @@ namespace keiganmotor {
          */
         writeUInt32(command: number, value: number) {
             let buf = pins.createBuffer(7 + 4)
-            buf.write(0, pins.createBufferFromArray(this.nameArray))
+            buf.write(0, this.nameBuffer)
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
             buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
             buf.setNumber(NumberFormat.UInt32LE, 7, value)
@@ -270,7 +330,7 @@ namespace keiganmotor {
         */
         writeUInt16UInt32(command: number, value1: number, value2: number) {
             let buf = pins.createBuffer(7 + 2 + 4)
-            buf.write(0, pins.createBufferFromArray(this.nameArray))
+            buf.write(0, this.nameBuffer)
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
             buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
             buf.setNumber(NumberFormat.UInt16BE, 7, value1)
@@ -284,7 +344,7 @@ namespace keiganmotor {
         */
         writeUInt16UInt32UInt8(command: number, value1: number, value2: number, value3: number) {
             let buf = pins.createBuffer(7 + 2 + 4 + 1)
-            buf.write(0, pins.createBufferFromArray(this.nameArray))
+            buf.write(0, this.nameBuffer)
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
             buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
             buf.setNumber(NumberFormat.UInt16BE, 7, value1)
@@ -299,7 +359,7 @@ namespace keiganmotor {
          */
         writeUInt16(command: number, value: number) {
             let buf = pins.createBuffer(7 + 2)
-            buf.write(0, pins.createBufferFromArray(this.nameArray))
+            buf.write(0, this.nameBuffer)
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
             buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
             buf.setNumber(NumberFormat.UInt16BE, 7, value)
@@ -312,7 +372,7 @@ namespace keiganmotor {
          */
         writeUInt8Array(command: number, values: number[]) {
             let buf = pins.createBuffer(7 + values.length)
-            buf.write(0, pins.createBufferFromArray(this.nameArray))
+            buf.write(0, this.nameBuffer)
             buf.setNumber(NumberFormat.UInt8BE, 4, command)
             buf.setNumber(NumberFormat.UInt16BE, 5, this.packetId)
             for (let i = 0; i < values.length; i++) {
