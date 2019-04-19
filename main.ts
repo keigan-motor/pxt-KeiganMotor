@@ -77,7 +77,8 @@ namespace keiganmotor {
     const CMD_OTHERS_REBOOT = 0xF0
 
 
-    //let mArray: KeiganMotor[] = [] // Array to put KeiganMotor
+    let mArray: KeiganMotor[] = [] // Array to put KeiganMotor
+    let mNumber: number[] = [] // Array to put Number array from KeiganMotor's device name
 
     let mIndex: number
 
@@ -92,15 +93,17 @@ namespace keiganmotor {
     //% blockSetVariable=m
     export function create(name: string): KeiganMotor {
         let m = new KeiganMotor(name)
-
-        //addKeiganMotor(m)
-
+        addKeiganMotor(m)
         return m
     }
 
     /*
      * Set RADIO groupId 
      */
+    //% blockId="KeiganMotor_radio" block="Set KeiganMotor RADIO group %id"
+    //% weight=90 blockGap=8
+    //% parts="KeiganMotor"
+    //% advanced=true
     export function setGroup(id: number) {
         if (0 <= id && id <= 255) radio.setGroup(id);
     }
@@ -109,13 +112,13 @@ namespace keiganmotor {
      * Add KeiganMotor to mArray
      */
 
-    /*
-        export function addKeiganMotor(motor: KeiganMotor) {
-            mArray[mIndex] = motor
-            motor.index = mIndex
-            mIndex++
-        }
-    */
+
+    export function addKeiganMotor(m: KeiganMotor) {
+        mArray[mIndex] = m // Add KeiganMotor to mArray
+        mNumber[mIndex] = parseInt(m.name) // Add its name to mName
+        mIndex++
+    }
+
 
     /**
      * This is an event handler block
@@ -126,17 +129,34 @@ namespace keiganmotor {
 
     }
 
-
     radio.onReceivedBuffer(function (receivedBuffer: Buffer) {
         //let sender = receivedBuffer.slice(0, 4)
-        
-        let posBuffer = receivedBuffer.slice(5, 4)
-        let velBuffer = receivedBuffer.slice(9, 4)
-        let trqBuffer = receivedBuffer.slice(13, 4)
+        // let len = receivedBuffer.getNumber(NumberFormat.UInt8BE, 0)
+        /*
+        let nameNumber = radio.receivedSerial()
+        let mIndex = mNumber.indexOf(nameNumber)
+        let m = mArray[mIndex]
+        console.log(m.name)
+        */
+
+        // Initialize 4 bytes buffer
+        // NOTE) getNumber(NumberFormat.Float32BE, 0) causes the following error without these initialize.
+        // error: "Floar32Array should be multiple of 4" 
+        let posBuffer = pins.createBuffer(4)
+        let velBuffer = pins.createBuffer(4)
+        let trqBuffer = pins.createBuffer(4)
+
+        let posSourceBuffer = receivedBuffer.slice(5, 4)
+        let velSourceBuffer = receivedBuffer.slice(9, 4)
+        let trqSourceBuffer = receivedBuffer.slice(13, 4)
+
+        posBuffer.write(0, posSourceBuffer)
+        velBuffer.write(0, velSourceBuffer)
+        trqBuffer.write(0, trqSourceBuffer)
+
         let pos = posBuffer.getNumber(NumberFormat.Float32BE, 0)
         let vel = velBuffer.getNumber(NumberFormat.Float32BE, 0)
         let trq = trqBuffer.getNumber(NumberFormat.Float32BE, 0)
-
 
         console.logValue("pos", pos)
         console.logValue("vel", vel)
@@ -170,7 +190,6 @@ namespace keiganmotor {
         nameArray: number[]
         nameBuffer: Buffer
         group: number // TODO radio group
-        index: number // index in mArray
 
         packetId: number
 
