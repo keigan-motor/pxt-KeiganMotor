@@ -118,8 +118,8 @@ namespace keiganmotor {
 
 
     export function addKeiganMotor(m: KeiganMotor) {
-        motorArray[mIndex] = m 
-        serialNumberArray[mIndex] = m.serialNumber 
+        motorArray[mIndex] = m
+        serialNumberArray[mIndex] = m.serialNumber
         mIndex++
     }
 
@@ -137,33 +137,57 @@ namespace keiganmotor {
     radio.onDataPacketReceived(function (packet: radio.Packet) {
         let s = packet.serial
         let b = packet.receivedBuffer
-        //let nameBuffer = pins.createBuffer(4)
-        //nameBuffer.setNumber(NumberFormat.UInt32BE, 0, s)
-        console.logValue("packet.serial", s)
-        console.logValue("array[0]", serialNumberArray[0])
-        if (s == serialNumberArray[0]){
-            console.log("matched")
-        } else {
-            console.log("Not matched")
-        }
-        let index = serialNumberArray.indexOf(s)
-        console.logValue("index", index)
 
-        if (index >= 0) {
-            console.log("success")
-        } else {
+        let index = serialNumberArray.indexOf(s)
+
+        if (index < 0) {
             console.log("Not found")
             return
         }
-        //let m = mArray[mIndex]
-        //console.log(nameNumber.toString())
-        /*
-        console.logValue("number", nameNumber)
-        if (mBuffer.length > 0) {
-            console.logValue("mNumber", mBuffer[0].getNumber(NumberFormat.Float32BE, 0))
+
+        let dataType = b.getNumber(NumberFormat.UInt8BE, 4)
+
+        switch (dataType) {
+            case RECEIVE_TYPE_READ:
+                break;
+            case RECEIVE_TYPE_ERROR:
+                // TODO
+                let cmd = b.getNumber(NumberFormat.UInt8BE, 7)
+                let errorCode = b.getNumber(NumberFormat.UInt8BE, 8)
+                console.logValue("Command", cmd)
+                console.logValue("Error Code:", errorCode)
+                break;
+            case CMD_READ_MOTOR_MEASUREMENT:
+                // Initialize 4 bytes buffer
+                // NOTE) getNumber(NumberFormat.Float32BE, 0) causes the following error without these initialize.
+                // error: "Floar32Array should be multiple of 4" 
+                let posBuffer = pins.createBuffer(4)
+                let velBuffer = pins.createBuffer(4)
+                let trqBuffer = pins.createBuffer(4)
+
+                let posSourceBuffer = b.slice(5, 4)
+                let velSourceBuffer = b.slice(9, 4)
+                let trqSourceBuffer = b.slice(13, 4)
+
+                posBuffer.write(0, posSourceBuffer)
+                velBuffer.write(0, velSourceBuffer)
+                trqBuffer.write(0, trqSourceBuffer)
+
+                let pos = posBuffer.getNumber(NumberFormat.Float32BE, 0)
+                let vel = velBuffer.getNumber(NumberFormat.Float32BE, 0)
+                let trq = trqBuffer.getNumber(NumberFormat.Float32BE, 0)
+
+                console.logValue("pos", pos)
+                console.logValue("vel", vel)
+                console.logValue("trq", trq)
+                break;
+            default:
+                break;
+
         }
 
     })
+
 
 
     /*
@@ -196,46 +220,6 @@ namespace keiganmotor {
 
 
 
-        /*
-                let cmd = receivedBuffer.getNumber(NumberFormat.UInt8BE, 4)
-        
-                switch (cmd) {
-                    case RECEIVE_TYPE_READ:
-                        break;
-                    case RECEIVE_TYPE_ERROR:
-                        break;
-                    case CMD_READ_MOTOR_MEASUREMENT:
-                        // Initialize 4 bytes buffer
-                        // NOTE) getNumber(NumberFormat.Float32BE, 0) causes the following error without these initialize.
-                        // error: "Floar32Array should be multiple of 4" 
-                        let posBuffer = pins.createBuffer(4)
-                        let velBuffer = pins.createBuffer(4)
-                        let trqBuffer = pins.createBuffer(4)
-        
-                        let posSourceBuffer = receivedBuffer.slice(5, 4)
-                        let velSourceBuffer = receivedBuffer.slice(9, 4)
-                        let trqSourceBuffer = receivedBuffer.slice(13, 4)
-        
-                        posBuffer.write(0, posSourceBuffer)
-                        velBuffer.write(0, velSourceBuffer)
-                        trqBuffer.write(0, trqSourceBuffer)
-        
-                        let pos = posBuffer.getNumber(NumberFormat.Float32BE, 0)
-                        let vel = velBuffer.getNumber(NumberFormat.Float32BE, 0)
-                        let trq = trqBuffer.getNumber(NumberFormat.Float32BE, 0)
-        
-                        console.logValue("pos", pos)
-                        console.logValue("vel", vel)
-                        console.logValue("trq", trq)
-                        break;
-                    default:
-                        break;
-        
-                }
-              
-
-*/
-    })
 
 
 
@@ -247,9 +231,9 @@ namespace keiganmotor {
 
         name: string
         nameBuffer: Buffer
-        serialNumber:number
+        serialNumber: number
 
-        group: number 
+        group: number
 
         packetId: number
 
