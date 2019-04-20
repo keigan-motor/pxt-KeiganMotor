@@ -127,8 +127,10 @@ namespace keiganmotor {
     /**
      * This is an event handler block
      */
-    //% block="on event"
-    export function onReceivedMotorMeasurement(module: KeiganMotor, position: number, velocity: number, torque: number) {
+    //% blockId="Received_Motor_Meas" block="on received motor measurement"
+    //% weight=90 blockGap=8
+    //% parts="KeiganMotor"
+    export function onReceivedMotorMeasurement(cb: (module: KeiganMotor) => void) {
 
 
     }
@@ -145,6 +147,7 @@ namespace keiganmotor {
             return
         }
 
+        let m = motorArray[index]
         let dataType = b.getNumber(NumberFormat.UInt8BE, 4)
 
         switch (dataType) {
@@ -180,6 +183,11 @@ namespace keiganmotor {
                 console.logValue("pos", pos)
                 console.logValue("vel", vel)
                 console.logValue("trq", trq)
+
+                onReceivedMotorMeasurement(function (module: KeiganMotor) {
+                    module = m
+                })
+
                 break;
             default:
                 break;
