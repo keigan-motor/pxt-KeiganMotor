@@ -43,6 +43,7 @@ enum playback_option {
 namespace keiganmotor {
 
     const RPM_TO_RADIANPERSEC = 0.10471975511965977
+    const RADIANPERSEC_TO_RPM = 9.54929658551
     const DEGREE_TO_RADIAN = 0.017453292519943295
     const RADIAN_TO_DEGREE = 57.2957795131
 
@@ -86,6 +87,9 @@ namespace keiganmotor {
 
     let mIndex: number = 0
 
+    let initialized = false;
+    let motorReceived: KeiganMotor
+
     /**
      * Create a new KeiganMotor.
      * @param name included by KeiganMotor's device name
@@ -122,113 +126,6 @@ namespace keiganmotor {
         serialNumberArray[mIndex] = m.serialNumber
         mIndex++
     }
-
-
-    /**
-     * This is an event handler block
-     */
-    //% blockId="Received_Motor_Meas" block="on received motor measurement"
-    //% weight=90 blockGap=8
-    //% parts="KeiganMotor"
-    export function onReceivedMotorMeasurement(cb: (module: KeiganMotor) => void) {
-
-
-    }
-
-
-    radio.onDataPacketReceived(function (packet: radio.Packet) {
-        let s = packet.serial
-        let b = packet.receivedBuffer
-
-        let index = serialNumberArray.indexOf(s)
-
-        if (index < 0) {
-            console.log("Not found")
-            return
-        }
-
-        let m = motorArray[index]
-        let dataType = b.getNumber(NumberFormat.UInt8BE, 4)
-
-        switch (dataType) {
-            case RECEIVE_TYPE_READ:
-                break;
-            case RECEIVE_TYPE_ERROR:
-                // TODO
-                let cmd = b.getNumber(NumberFormat.UInt8BE, 7)
-                let errorCode = b.getNumber(NumberFormat.UInt8BE, 8)
-                console.logValue("Command", cmd)
-                console.logValue("Error Code:", errorCode)
-                break;
-            case CMD_READ_MOTOR_MEASUREMENT:
-                // Initialize 4 bytes buffer
-                // NOTE) getNumber(NumberFormat.Float32BE, 0) causes the following error without these initialize.
-                // error: "Floar32Array should be multiple of 4" 
-                let posBuffer = pins.createBuffer(4)
-                let velBuffer = pins.createBuffer(4)
-                let trqBuffer = pins.createBuffer(4)
-
-                let posSourceBuffer = b.slice(5, 4)
-                let velSourceBuffer = b.slice(9, 4)
-                let trqSourceBuffer = b.slice(13, 4)
-
-                posBuffer.write(0, posSourceBuffer)
-                velBuffer.write(0, velSourceBuffer)
-                trqBuffer.write(0, trqSourceBuffer)
-
-                let pos = posBuffer.getNumber(NumberFormat.Float32BE, 0)
-                let vel = velBuffer.getNumber(NumberFormat.Float32BE, 0)
-                let trq = trqBuffer.getNumber(NumberFormat.Float32BE, 0)
-
-                console.logValue("pos", pos)
-                console.logValue("vel", vel)
-                console.logValue("trq", trq)
-
-                onReceivedMotorMeasurement(function (module: KeiganMotor) {
-                    module = m
-                })
-
-                break;
-            default:
-                break;
-
-        }
-
-    })
-
-
-
-    /*
-    radio.onReceivedBuffer(function (receivedBuffer: Buffer) {
-        //let sender = receivedBuffer.slice(0, 4)
-        // let len = receivedBuffer.getNumber(NumberFormat.UInt8BE, 0)
-
-        //let nameBuffer = pins.createBuffer(4)
-        //nameBuffer.setNumber(NumberFormat.Float32BE, 0, nameNumber)
-        
-        let a = nameBuffer.getNumber(NumberFormat.UInt8BE, 0)
-        let b = nameBuffer.getNumber(NumberFormat.UInt8BE, 1)
-        let c = nameBuffer.getNumber(NumberFormat.UInt8BE, 2)
-        let d = nameBuffer.getNumber(NumberFormat.UInt8BE, 3)
-        let array = [a, b, c, d]
-        console.log(a.toString())
-        
-        //console.log("name:")
-        //console.log(nameText)
-
-        //let mIndex = mNumber.indexOf(nameNumber)
-        //let m = mArray[mIndex]
-        //console.log(nameNumber.toString())
-        /*
-        console.logValue("number", nameNumber)
-        if (mBuffer.length > 0) {
-            console.logValue("mNumber", mBuffer[0].getNumber(NumberFormat.Float32BE, 0))
-        }
-        */
-
-
-
-
 
 
 
@@ -372,28 +269,6 @@ namespace keiganmotor {
             }
 
             radio.sendBuffer(buf)
-        }
-
-        /**
-         * Set Max Torque
-         * @param torque [N*m]
-         */
-        //% blockId="mxTorque" block="%KeiganMotor|set max torque(N*m) %value"
-        //% weight=85 blockGap=8
-        //% parts="KeiganMotor"
-        maxTorque(value: number) {
-            this.writeFloat32(CMD_REG_MAX_TORQUE, value)
-        }
-
-        /**
-         * Read Motor Measurement (Position, Velocity and Torque) 
-         */
-        //% blockId="readMotor" block="%KeiganMotor|Read Motor Measurement" 
-        //% weight=85 blockGap=8
-        //% parts="KeiganMotor"
-        readMotorMeasurement() {
-            this.write(CMD_READ_MOTOR_MEASUREMENT)
-
         }
 
         /**
@@ -610,6 +485,7 @@ namespace keiganmotor {
         //% blockId="stopPlaybackMotion" block="%KeiganMotor|stop playback motion"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
+        //% advanced=true
         stopPlaybackMotion() {
             this.write(CMD_ACT_STOP_PLAYBACK_MOTION)
         }
@@ -621,7 +497,7 @@ namespace keiganmotor {
          * @param green value between 0 and 255. eg: 255
          * @param blue value between 0 and 255. eg: 255
          */
-        //% blockId="KeiganMotor_led" block="%KeiganMotor|state %led_state|red %red|green %green|blue %blue"
+        //% blockId="KeiganMotor_led" block="%KeiganMotor|led state %led_state|red %red|green %green|blue %blue"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         led(state: led_state, red: number, green: number, blue: number) {
@@ -635,11 +511,175 @@ namespace keiganmotor {
         //% blockId="reboot" block="%KeiganMotor|reboot"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
+        //% advanced=true
         reboot() {
             this.write(CMD_OTHERS_REBOOT)
         }
 
 
+        /**
+         * Get KeiganMotor parameters
+         * @return position, velocity, torque
+         */
+        //% blockId="getPosition" block="%KeiganMotor|position [rad]"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        //% advanced=true
+        getPosition(): number {
+            return this.position
+        }
+
+        //% blockId="getDegree" block="%KeiganMotor|degree [deg]"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        getDegree(): number {
+            let deg = Math.round(this.position * RADIAN_TO_DEGREE *100)*0.01 // TODO to long
+            return deg
+        }
+
+        //% blockId="getVelocity" block="%KeiganMotor|velocity [rad/s]"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        //% advanced=true
+        getVelocity(): number {
+            return this.velocity
+        }
+
+        //% blockId="getRpm" block="%KeiganMotor|rotations per minute"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        getRpm(): number {
+            let rpm = Math.roundWithPrecision(this.velocity * RADIANPERSEC_TO_RPM, 1)
+            return rpm
+        }
+
+        //% blockId="getTorque" block="%KeiganMotor|torque [Nm]"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        getTorque(): number {
+            return this.torque
+        }
+
+        /**
+         * Set Max Torque
+         * @param torque [N*m]
+         */
+        //% blockId="mxTorque" block="%KeiganMotor|set max torque(N*m) %value"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        maxTorque(value: number) {
+            this.writeFloat32(CMD_REG_MAX_TORQUE, value)
+        }
+
+        /**
+         * Read Motor Measurement (Position, Velocity and Torque) 
+         */
+        //% blockId="readMotor" block="%KeiganMotor|read motor measurement" 
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        readMotorMeasurement() {
+            this.write(CMD_READ_MOTOR_MEASUREMENT)
+
+        }
+
+
+    }
+
+    /*
+      * Event handler when received packet from KeiganMotor
+      */
+
+    export const MAKECODE_RADIO_EVT_KEIGAN_READ = 0x140;
+    export const MAKECODE_RADIO_EVT_KEIGAN_ERROR = 0x1BE;
+    export const MAKECODE_RADIO_EVT_KEIGAN_MOTOR_MEAS = 0x1B4;
+    export const MAKECODE_RADIO_EVT_KEIGAN_IMU_MEAS = 0x1B5;
+
+    function init_DataReceived() {
+        if (initialized) return;
+        initialized = true;
+
+        radio.onDataPacketReceived(function (packet: radio.Packet) {
+
+            let s = packet.serial
+            let b = packet.receivedBuffer
+
+            let index = serialNumberArray.indexOf(s)
+
+            // Returns if packet.serial not matched with any KeiganMotor
+            if (index < 0) {
+                console.log("Not found")
+                return
+            }
+
+            let m = motorArray[index]
+
+            let dataType = b.getNumber(NumberFormat.UInt8BE, 4)
+
+            switch (dataType) {
+                case RECEIVE_TYPE_READ:
+                    control.raiseEvent(DAL.MICROBIT_ID_RADIO, MAKECODE_RADIO_EVT_KEIGAN_READ);
+                    break;
+                case RECEIVE_TYPE_ERROR:
+                    // TODO
+                    let cmd = b.getNumber(NumberFormat.UInt8BE, 7)
+                    let errorCode = b.getNumber(NumberFormat.UInt8BE, 8)
+                    console.logValue("Command", cmd)
+                    console.logValue("Error Code:", errorCode)
+                    control.raiseEvent(DAL.MICROBIT_ID_RADIO, MAKECODE_RADIO_EVT_KEIGAN_ERROR);
+                    break;
+                case CMD_READ_MOTOR_MEASUREMENT:
+                    // Initialize 4 bytes buffer
+                    // NOTE) getNumber(NumberFormat.Float32BE, 0) causes the following error without these initialize.
+                    // error: "Floar32Array should be multiple of 4" 
+                    let posBuffer = pins.createBuffer(4)
+                    let velBuffer = pins.createBuffer(4)
+                    let trqBuffer = pins.createBuffer(4)
+
+                    let posSourceBuffer = b.slice(5, 4)
+                    let velSourceBuffer = b.slice(9, 4)
+                    let trqSourceBuffer = b.slice(13, 4)
+
+                    posBuffer.write(0, posSourceBuffer)
+                    velBuffer.write(0, velSourceBuffer)
+                    trqBuffer.write(0, trqSourceBuffer)
+
+                    let pos = posBuffer.getNumber(NumberFormat.Float32BE, 0)
+                    let vel = velBuffer.getNumber(NumberFormat.Float32BE, 0)
+                    let trq = trqBuffer.getNumber(NumberFormat.Float32BE, 0)
+
+                    m.position = pos
+                    m.velocity = vel
+                    m.torque = trq
+
+                    motorReceived = m
+
+                    //console.logValue("pos", pos)
+                    //console.logValue("vel", vel)
+                    //console.logValue("trq", trq)
+
+                    control.raiseEvent(DAL.MICROBIT_ID_RADIO, MAKECODE_RADIO_EVT_KEIGAN_MOTOR_MEAS);
+
+
+                    break;
+                default:
+                    break;
+
+            }
+        })
+
+    }
+
+    /**
+     * This is an event handler block
+     */
+    //% blockId="Received_Motor_Meas" block="on received motor measurement"
+    //% weight=90 blockGap=8
+    //% parts="KeiganMotor"
+    export function onReceivedMotorMeasurement(cb: (motor: KeiganMotor) => void) {
+        init_DataReceived();
+        control.onEvent(DAL.MICROBIT_ID_RADIO, MAKECODE_RADIO_EVT_KEIGAN_MOTOR_MEAS, () => {
+            cb(motorReceived)
+        });
     }
 
 
