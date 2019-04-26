@@ -10,19 +10,24 @@ You can control KeiganMotor KM-1 Series via micro:bit
 ## Basic
 
 ### First
-You need to specify unique 4 digits "name" to control KeiganMotor.
+You need to specify unique 4 digits "name" of KeiganMotor to control.
 You can know it by two ways as belows.
 
 1. The last 4 digits of the serial number. 
  - If the serial number is "ABCDEFGH", the name is "EFGH"  
 2. The 4 digits Included by devicename of Bluetooth Low Energy.
  - If the device name is "KM-1 EFGH#RGB", the name is "EFGH". 
-   - You can use "KeiganCore" app or other BLE apps to get device name.
+   - You can use "KeiganCore" app or other BLE apps to get device name. 
 
 ### Initialization
 ```typescript
 // Initialize KeiganMotor by its name
 let m = keiganmotor.create("EFGH")
+```
+
+### Enable Action
+```typescript
+m.enable()
 ```
 
 ### Rotate

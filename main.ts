@@ -306,8 +306,8 @@ namespace keiganmotor {
         /**
          * Set speed rotation per minute
          * @param speed [rotation/minute]
-         */
-        //% blockId="speedRpm" block="%KeiganMotor|set speed(rpm) %value"
+         */ 
+        //% blockId="speedRpm" block="%KeiganMotor|set speed [rpm] %value"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         speedRpm(value: number) {
@@ -349,7 +349,7 @@ namespace keiganmotor {
          * Run At Velocity(rpm)
          * @param velocity [rotation/minute]
          */
-        //% blockId="runRpm" block="%KeiganMotor|run at velocity(rpm) %velocity"
+        //% blockId="runRpm" block="%KeiganMotor|run at velocity [rpm] %velocity"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         runRpm(velocity: number) {
@@ -368,7 +368,7 @@ namespace keiganmotor {
          * Move To Position
          * @param position [degree]
          */
-        //% blockId="moveToDeg" block="%KeiganMotor|move to position(degree) %position"
+        //% blockId="moveToDeg" block="%KeiganMotor|move to position [degree] %position"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         moveToDeg(position: number) {
@@ -387,7 +387,7 @@ namespace keiganmotor {
          * Move To Position
          * @param distance [degree]
          */
-        //% blockId="moveByDeg" block="%KeiganMotor|move by distance(degree) %distance"
+        //% blockId="moveByDeg" block="%KeiganMotor|move by distance [degree] %distance"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         moveByDeg(distance: number) {
@@ -533,7 +533,7 @@ namespace keiganmotor {
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         getDegree(): number {
-            let deg = Math.round(this.position * RADIAN_TO_DEGREE *100)*0.01 // TODO to long
+            let deg = Math.round(this.position * RADIAN_TO_DEGREE * 100) * 0.01 // TODO to long
             return deg
         }
 
@@ -564,7 +564,7 @@ namespace keiganmotor {
          * Set Max Torque
          * @param torque [N*m]
          */
-        //% blockId="mxTorque" block="%KeiganMotor|set max torque(N*m) %value"
+        //% blockId="mxTorque" block="%KeiganMotor|set max torque [Nm] %value"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         maxTorque(value: number) {
