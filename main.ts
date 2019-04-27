@@ -91,7 +91,7 @@ namespace keiganmotor {
     let motorReceived: KeiganMotor
 
     /**
-     * Create a new KeiganMotor.
+     * Create a new KeiganMotor by specifying its 4 digit of device name .
      * @param name included by KeiganMotor's device name
      */
     //% blockId="KeiganMotor_create" block="KeiganMotor %name"
@@ -121,7 +121,7 @@ namespace keiganmotor {
      */
 
 
-    export function addKeiganMotor(m: KeiganMotor) {
+    function addKeiganMotor(m: KeiganMotor) {
         motorArray[mIndex] = m
         serialNumberArray[mIndex] = m.serialNumber
         mIndex++
@@ -294,7 +294,7 @@ namespace keiganmotor {
 
 
         /**
-         * Set speed
+         * Set speed [radians/sec]
          * @param speed [radians/sec]
          */
         speed(value: number) {
@@ -304,9 +304,9 @@ namespace keiganmotor {
 
 
         /**
-         * Set speed rotation per minute
+         * Set speed [rotation/minute]
          * @param speed [rotation/minute]
-         */ 
+         */
         //% blockId="speedRpm" block="%KeiganMotor|set speed [rpm] %value"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
@@ -338,7 +338,7 @@ namespace keiganmotor {
 
 
         /**
-         * Run At Velocity
+         * Run At Velocity [radian/sec]
          * @param velocity [radian/sec]
          */
         run(velocity: number) {
@@ -346,7 +346,7 @@ namespace keiganmotor {
         }
 
         /**
-         * Run At Velocity(rpm)
+         * Run At Velocity [rotation/minute]
          * @param velocity [rotation/minute]
          */
         //% blockId="runRpm" block="%KeiganMotor|run at velocity [rpm] %velocity"
@@ -357,7 +357,7 @@ namespace keiganmotor {
         }
 
         /**
-        * Move To Position
+        * Move To Position [radian]
         * @param position [radian]
         */
         moveTo(position: number) {
@@ -365,7 +365,7 @@ namespace keiganmotor {
         }
 
         /**
-         * Move To Position
+         * Move To Position [degree]
          * @param position [degree]
          */
         //% blockId="moveToDeg" block="%KeiganMotor|move to position [degree] %position"
@@ -376,7 +376,7 @@ namespace keiganmotor {
         }
 
         /**
-        * Move By Distance
+        * Move By Distance [radian]
         * @param distance [radian]
         */
         moveBy(distance: number) {
@@ -384,7 +384,7 @@ namespace keiganmotor {
         }
 
         /**
-         * Move To Position
+         * Move To Position [degree]
          * @param distance [degree]
          */
         //% blockId="moveByDeg" block="%KeiganMotor|move by distance [degree] %distance"
@@ -395,7 +395,7 @@ namespace keiganmotor {
         }
 
         /**
-         * Free // de-energize Motor
+         * Free (de-energize Motor)
          */
         //% blockId="free" block="%KeiganMotor|free" 
         //% weight=85 blockGap=8
@@ -405,7 +405,7 @@ namespace keiganmotor {
         }
 
         /**
-         * Stop // Set speed 0 to Motor
+         * Stop (Set speed 0)
          */
         //% blockId="stop" block="%KeiganMotor|stop" 
         //% weight=85 blockGap=8
@@ -529,6 +529,10 @@ namespace keiganmotor {
             return this.position
         }
 
+        /**
+         * Get the current position [degree]
+         * @return the current degree
+         */
         //% blockId="getDegree" block="%KeiganMotor|degree [deg]"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
@@ -537,6 +541,9 @@ namespace keiganmotor {
             return deg
         }
 
+        /**
+         * Get the current velocity [rad/s]
+         */
         //% blockId="getVelocity" block="%KeiganMotor|velocity [rad/s]"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
@@ -545,6 +552,9 @@ namespace keiganmotor {
             return this.velocity
         }
 
+        /**
+         * Get the current velocity [rotation/minute]
+         */
         //% blockId="getRpm" block="%KeiganMotor|rotations per minute"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
@@ -553,6 +563,9 @@ namespace keiganmotor {
             return rpm
         }
 
+        /**
+         * Get the current torque [Nm]
+         */
         //% blockId="getTorque" block="%KeiganMotor|torque [Nm]"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
@@ -561,7 +574,7 @@ namespace keiganmotor {
         }
 
         /**
-         * Set Max Torque
+         * Set Max Torque [Nm]
          * @param torque [N*m]
          */
         //% blockId="mxTorque" block="%KeiganMotor|set max torque [Nm] %value"
@@ -670,7 +683,7 @@ namespace keiganmotor {
     }
 
     /**
-     * This is an event handler block
+     * Event handler when received motor measurement from KeiganMotor
      */
     //% blockId="Received_Motor_Meas" block="on received motor measurement"
     //% weight=90 blockGap=8
