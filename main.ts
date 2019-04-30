@@ -22,9 +22,13 @@
  * LED state
  */
 enum led_state {
+    //% block="OFF"
     OFF = 0,
+    //% block="SOLID"
     ON_SOLID = 1,
+    //% block="FLASH"
     ON_FLASH = 2,
+    //% block="DIM"
     ON_DIM = 3
 }
 
@@ -32,14 +36,16 @@ enum led_state {
  * Playback motion start option
  */
 enum playback_option {
+    //% block="RAW"
     START_FROM_RAW = 0, // Start from the raw position.
+    //% block="CURRENT"
     START_FROM_CURRENT = 1, // Start from the current position.
 }
 
 /**
  * Functions to operate KeiganMotor
  */
-//% weight=5 color=#D82317 icon="\uf110"
+//% weight=5 color=#D82317 icon="\uf110"  block="KeiganMotor"
 namespace keiganmotor {
 
     const RPM_TO_RADIANPERSEC = 0.10471975511965977

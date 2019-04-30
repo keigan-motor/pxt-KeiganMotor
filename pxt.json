@@ -1,18 +1,20 @@
 {
-    "name": "pxt-keiganmotor",
-    "version": "1.0.0",
-    "description": "",
+    "name": "KeiganMotor",
+    "version": "1.0.1",
+    "description": "MakeCode Extension to control KeiganMotor by micro:bit",
     "dependencies": {
         "core": "*",
         "radio": "*"
     },
     "files": [
         "README.md",
-        "main.ts"
+        "main.ts",
+        "_locales/ja/KeiganMotor-strings.json",
+        "_locales/ja/KeiganMotor-jsdoc-strings.json"
     ],
     "testFiles": [
         "test.ts"
     ],
-    "public": false,
+    "public": true,
     "installedVersion": "workspace:0e3a2b6f-88de-41a1-ad5f-8ba557bbe6cd"
 }
