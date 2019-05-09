@@ -94,8 +94,9 @@ namespace keiganmotor {
 
     let mIndex: number = 0
 
-    let initialized = false;
+    let initialized = false
     let motorReceived: KeiganMotor
+    let groupId = 1 // Default RADIO group is 1
 
     /**
      * Create a new KeiganMotor by specifying its 4 digit of device name .
@@ -112,15 +113,17 @@ namespace keiganmotor {
         return m
     }
 
-    /*
-     * Set RADIO groupId 
+    /**
+     * Set RADIO groupId
+     * (NOTE) Must be used before KeiganMotor create function
+     * 
      */
     //% blockId="KeiganMotor_radio" block="Set KeiganMotor RADIO group %id"
     //% weight=90 blockGap=8
     //% parts="KeiganMotor"
     //% advanced=true
     export function setGroup(id: number) {
-        if (0 <= id && id <= 255) radio.setGroup(id);
+        if (0 <= id && id <= 255) groupId = id
     }
 
     /*
@@ -161,7 +164,7 @@ namespace keiganmotor {
             this.makeNameBuffer()
             this.packetId = 0
             radio.setTransmitSerialNumber(true) // Include micro:bit serial number to packet
-            radio.setGroup(1) // TODO
+            radio.setGroup(groupId)
         }
 
         private makeNameBuffer() {
@@ -400,10 +403,10 @@ namespace keiganmotor {
         moveByDeg(distance: number) {
             this.moveBy(DEGREE_TO_RADIAN * distance)
         }
-         /**
-         * Preset Position [radian]
-         * @param position [radian]
-         */
+        /**
+        * Preset Position [radian]
+        * @param position [radian]
+        */
         //% blockId="presetPosition" block="%KeiganMotor|Preset Position [radian] %position"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"

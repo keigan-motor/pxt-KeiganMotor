@@ -26,7 +26,7 @@
   "keiganmotor.KeiganMotor.stop|block": "%KeiganMotor|停止する",
   "keiganmotor.create|block": "KeiganMotor %name",
   "keiganmotor.onReceivedMotorMeasurement|block": "モーターから情報を受け取った時",
-  "keiganmotor.setGroup|block": "グループIDを %id｜にする",
+  "keiganmotor.setGroup|block": "無線グループを %id にする",
   "keiganmotor|block": "KeiganMotor",
   "{id:category}Keiganmotor": "Keiganmotor",
   "led_state.OFF|block": "消灯",
