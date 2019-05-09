@@ -2,6 +2,8 @@
 
 You can control KeiganMotor KM-1 Series via micro:bit
 
+![タイトル](https://github.com/keigan-motor/pxt-KeiganMotor/blob/master/icon.png?raw=true)
+
 - Product page: https://keigan-motor.com
 - Documentation: https://document.keigan-motor.com
 
