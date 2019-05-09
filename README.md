@@ -1,6 +1,6 @@
 # pxt-keiganmotor
 
-You can control KeiganMotor KM-1 Series via micro:bit
+You can control KeiganMotor KM-1 Series from micro:bit
 
 <img src="https://github.com/keigan-motor/pxt-KeiganMotor/blob/master/icon.png?raw=true" width="640">
 
@@ -19,6 +19,8 @@ You can know it by two ways as belows.
 2. The 4 digits Included by devicename of Bluetooth Low Energy.
  - If the device name is "KM-1 EFGH#RGB", the name is "EFGH". 
    - You can use "KeiganCore" app or other BLE apps to get device name. 
+
+Example by MakeCode Blocks and JavaScript
 
 ## Block
 Make KeiganMotor rotate and control LED.
