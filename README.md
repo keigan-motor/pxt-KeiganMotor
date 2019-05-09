@@ -2,16 +2,15 @@
 
 You can control KeiganMotor KM-1 Series via micro:bit
 
-<img src="https://github.com/keigan-motor/pxt-KeiganMotor/blob/master/icon.png?raw=tru" width="640">
+<img src="https://github.com/keigan-motor/pxt-KeiganMotor/blob/master/icon.png?raw=true" width="640">
 
 - Product page: https://keigan-motor.com
 - Documentation: https://document.keigan-motor.com
 
 **The device firmware version needs to be >= 2.00.**
 
-## Basic
 
-### First
+## First
 You need to specify unique 4 digits "name" of KeiganMotor to control.
 You can know it by two ways as belows.
 
@@ -21,6 +20,11 @@ You can know it by two ways as belows.
  - If the device name is "KM-1 EFGH#RGB", the name is "EFGH". 
    - You can use "KeiganCore" app or other BLE apps to get device name. 
 
+## Block
+Make KeiganMotor rotate and control LED.
+<img src="https://github.com/keigan-motor/pxt-KeiganMotor/blob/master/images/block.png?raw=true" width="640">
+
+## JavaScript
 ### Initialization
 ```typescript
 // Initialize KeiganMotor by its name
@@ -29,12 +33,12 @@ let m = keiganmotor.create("EFGH")
 
 ### Enable Action
 ```typescript
-m.enable()
+m.enable() 
 ```
 
 ### Rotate
 ```typescript
-m.run(1) // run at velocity 1 [radians/sec]
+m.runRpm(10) // run at velocity 10 [rotation/minute]
 basic.pause(10000) // wait for 10 seconds
 m.stop() // stop (set speed to 0)
 ```
