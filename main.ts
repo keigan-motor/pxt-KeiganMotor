@@ -461,7 +461,7 @@ namespace keiganmotor {
          * @param index 
          * @param time [milliseconds]
          */
-        //% blockId="startTeachingMotion" block="%KeiganMotor|start teaching motion at index %index"
+        //% blockId="startTeachingMotion" block="%KeiganMotor|start teaching motion at index %index for time %time"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         //% advanced=true
@@ -488,7 +488,7 @@ namespace keiganmotor {
          * @param repeating // times
          * @param option // playback start option 
          */
-        //% blockId="preparePlaybackMotion" block="%KeiganMotor|prepare playback motion at index %index"
+        //% blockId="preparePlaybackMotion" block="%KeiganMotor|prepare playback motion at index %index repeating %repeating option %option"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         //% advanced=true
