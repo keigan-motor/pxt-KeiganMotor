@@ -1,4 +1,4 @@
-Copyright (c) Microsoft Corporation
+Copyright (c) Keigan Inc.
 
 All rights reserved.
 
