@@ -60,7 +60,7 @@ m.led(led_state.ON_SOLID, 255, 255, 0) // Set LED color to RGB(255,255,0) = yell
 ```
 
 ### Control Multiple KeiganMotor
-** You should change RADIO groupId separately to avoid to get jammed. **
+**You should change RADIO groupId separately to avoid to get jammed.**
 ```typescript
 let m1 = keiganmotor.create(0, "EFGH")
 let m2 = keiganmotor.create(1, "PQRS")
