@@ -3,7 +3,6 @@
   "keiganmotor.KeiganMotor": "KeiganMotor",
   "keiganmotor.KeiganMotor.disable": "OFFにする（動作不許可）",
   "keiganmotor.KeiganMotor.enable": "ONにする（動作許可）",
-  "keiganmotor.setGroup": "無線のグループＩＤを指定。※KeiganMotor の生成よりも前に行うこと",
   "keiganmotor.KeiganMotor.eraseMotion": "指定番号の動作を消去する",
   "keiganmotor.KeiganMotor.free": "解放する（モーターへの動力供給を止める）",
   "keiganmotor.KeiganMotor.getDegree": "現在位置[度]を調べる",
@@ -50,8 +49,8 @@
   "keiganmotor.KeiganMotor.writeUInt16UInt32UInt8": "Send command, UInt16, UInt32, and UInt8 value after prepending name = \"XXXX\"\n[ X X X X | CMD | packetId | VALUE1 | VALUE2 | VALUE3 ]",
   "keiganmotor.KeiganMotor.writeUInt32": "Send command and UInt32 value after prepending name = \"XXXX\"\n[ X X X X | CMD | packetId | VALUES(BYTES) ]",
   "keiganmotor.KeiganMotor.writeUInt8Array": "Send command and UInt8 values after prepending name = \"XXXX\"\n[ X X X X | CMD | packetId | VALUES(BYTES) ]",
-  "keiganmotor.create": "新しいKeiganMotorを4桁のデバイス名で生成する",
-  "keiganmotor.create|param|name": "KeiganMotorのデバイス名に含まれています",
+  "keiganmotor.create": "新しいKeiganMotorを4桁のデバイス名と無線グループ（0~255）で生成する",
+  "keiganmotor.create|param|name": "KeiganMotorのシリアルナンバーまたはデバイス名の4桁の英数字です",
   "keiganmotor.onReceivedMotorMeasurement": "KeiganMotorから（位置、回転速度、トルク）情報を受け取った時のイベント",
   "led_state": "LEDの点灯状態",
   "playback_option": "再生開始オプション"

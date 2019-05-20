@@ -43,6 +43,16 @@ enum playback_option {
 }
 
 /**
+ * Curve type of Motion Control
+ */
+enum curve_type {
+    //% block="NONE"
+    CURVE_TYPE_NONE = 0,
+    //% block="TRAPEZOID"
+    CURVE_TYPE_TRAPEZOID = 1
+}
+
+/**
  * Functions to operate KeiganMotor
  */
 //% weight=5 color=#D82317 icon="\uf110"  block="KeiganMotor"
@@ -54,6 +64,9 @@ namespace keiganmotor {
     const RADIAN_TO_DEGREE = 57.2957795131
 
     const CMD_REG_MAX_SPEED = 0x02
+    const CMD_REG_ACC = 0x07
+    const CMD_TEG_DEC = 0x08
+    const CMD_REG_CURVE_TYPE = 0x05
     const CMD_REG_MAX_TORQUE = 0x0E
 
     const CMD_ACT_DISABLE = 0x50
@@ -96,35 +109,23 @@ namespace keiganmotor {
 
     let initialized = false
     let motorReceived: KeiganMotor
-    let groupId = 1 // Default RADIO group is 1
+    
 
     /**
      * Create a new KeiganMotor by specifying its 4 digit of device name .
      * @param name included by KeiganMotor's device name
      */
-    //% blockId="KeiganMotor_create" block="KeiganMotor %name"
+    //% blockId="KeiganMotor_create" block="KeiganMotor RADIO group %group name %name "
     //% weight=90 blockGap=8
     //% parts="KeiganMotor"
     //% trackArgs=0,2
     //% blockSetVariable=m
-    export function create(name: string): KeiganMotor {
-        let m = new KeiganMotor(name)
+    export function create(group: number, name: string): KeiganMotor {
+        let m = new KeiganMotor(group, name)
         addKeiganMotor(m)
         return m
     }
 
-    /**
-     * Set RADIO groupId
-     * (NOTE) Must be used before KeiganMotor create function
-     * 
-     */
-    //% blockId="KeiganMotor_radio" block="Set KeiganMotor RADIO group %id"
-    //% weight=90 blockGap=8
-    //% parts="KeiganMotor"
-    //% advanced=true
-    export function setGroup(id: number) {
-        if (0 <= id && id <= 255) groupId = id
-    }
 
     /*
      * Add KeiganMotor to mArray
@@ -143,7 +144,8 @@ namespace keiganmotor {
      * A KeiganMotor
      */
     export class KeiganMotor {
-
+        
+        groupId:number 
         name: string
         nameBuffer: Buffer
         serialNumber: number
@@ -159,12 +161,16 @@ namespace keiganmotor {
         public rpm: number // [rotation per minute] velocity's another expression 
         public degree: number // [degree] position's another expression
 
-        constructor(name: string) {
+        constructor(group: number, name: string) {
             this.name = name
+            if (group >= 0 && group <= 255) {
+                this.groupId = group
+            } else {
+                this.groupId = 0 // Default RADIO group is 0
+            }
             this.makeNameBuffer()
             this.packetId = 0
             radio.setTransmitSerialNumber(true) // Include micro:bit serial number to packet
-            radio.setGroup(groupId)
         }
 
         private makeNameBuffer() {
@@ -180,6 +186,7 @@ namespace keiganmotor {
          * Send Buffer by RADIO
          */
         send(buf: Buffer) {
+            radio.setGroup(this.groupId)
             radio.sendBuffer(buf)
             this.packetId++
             if (this.packetId == 65536) this.packetId = 0
@@ -613,6 +620,17 @@ namespace keiganmotor {
         maxTorque(value: number) {
             this.writeFloat32(CMD_REG_MAX_TORQUE, value)
         }
+
+        /**
+         * Set Curve Type of Motion Control
+         */
+        //% blockId="curveType" block="%KeiganMotor|set curve type %type"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        curveType(curve: curve_type) {
+            this.writeUInt8Array(CMD_REG_CURVE_TYPE, [curve])
+        }
+
 
         /**
          * Read Motor Measurement (Position, Velocity and Torque) 

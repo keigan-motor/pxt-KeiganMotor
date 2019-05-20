@@ -24,9 +24,8 @@
   "keiganmotor.KeiganMotor.stopPlaybackMotion|block": "%KeiganMotor|再生を終了",
   "keiganmotor.KeiganMotor.stopTeachingMotion|block": "%KeiganMotor|記録を終了",
   "keiganmotor.KeiganMotor.stop|block": "%KeiganMotor|停止する",
-  "keiganmotor.create|block": "KeiganMotor %name",
+  "keiganmotor.create|block": "無線グループ %groupId の KeiganMotor %name  ",
   "keiganmotor.onReceivedMotorMeasurement|block": "モーターから情報を受け取った時",
-  "keiganmotor.setGroup|block": "無線グループを %id にする",
   "keiganmotor|block": "KeiganMotor",
   "{id:category}Keiganmotor": "Keiganmotor",
   "led_state.OFF|block": "消灯",
@@ -34,5 +33,7 @@
   "led_state.ON_FLASH|block": "点滅",
   "led_state.ON_SOLID|block": "点灯",
   "playback_option.START_FROM_CURRENT|block": "現時点から",
-  "playback_option.START_FROM_RAW|block": "ローから"
+  "playback_option.START_FROM_RAW|block": "ローから",
+  "curve_type.CURVE_TYPE_NONE|block": "カーブなし",
+  "curve_type.CURVE_TYPE_TRAPEZOID|block": "台形カーブ"
 }

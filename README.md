@@ -8,7 +8,7 @@ You can control KeiganMotor KM-1 Series from micro:bit via RADIO
 - Documentation: https://document.keigan-motor.com
 
 ## Requirement
-1. KeiganMotor KM-1 Series **The device firmware version needs to be more than 2.00.**
+1. KeiganMotor KM-1 Series **The device firmware version needs to be more than 2.02.**
 2. MakeCode Editor for micro:bit (https://makecode.microbit.org)
 
 ## First
@@ -38,8 +38,9 @@ Make KeiganMotor rotate and control LED.
 ## JavaScript
 ### Initialization
 ```typescript
-// Initialize KeiganMotor by its name
-let m = keiganmotor.create("EFGH")
+// Initialize KeiganMotor by RADIO group and its name
+// RADIO group should be from 0 to 255
+let m = keiganmotor.create(0, "EFGH") // RADIO group ID = 0, name = "EFGH"
 ```
 
 ### Enable Action
@@ -56,6 +57,16 @@ m.stop() // stop (set speed to 0)
 ### LED
 ```typescript
 m.led(led_state.ON_SOLID, 255, 255, 0) // Set LED color to RGB(255,255,0) = yellow
+```
+
+### Control Multiple KeiganMotor
+** You should change RADIO groupId separately to avoid to get jammed. **
+```typescript
+let m1 = keiganmotor.create(0, "EFGH")
+let m2 = keiganmotor.create(1, "PQRS")
+
+m1.enable()
+m2.enable()
 ```
 
 
