@@ -25,7 +25,7 @@ You can know it by two ways as belows.
 You need to change KeiganMotor's RADIO mode from BLE to "micro:bit mode".
 
 1. Supply power to KeiganMotor.
-2. Push Stop Button 10 times.
+2. Push the middle "Stop" Button 10 times.
 3. It will reboot automatically and change to micro:bit mode.
 (LED will blink Yellow for 2 seconds right after startup when micro:bit mode.)
 
