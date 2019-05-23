@@ -1,6 +1,6 @@
 {
     "name": "KeiganMotor",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "MakeCode Extension to control KeiganMotor by micro:bit",
     "dependencies": {
         "core": "*",
