@@ -21,7 +21,7 @@
 /**
  * LED state
  */
-enum led_state {
+enum LedState {
     //% block="OFF"
     OFF = 0,
     //% block="SOLID"
@@ -35,7 +35,7 @@ enum led_state {
 /**
  * Playback motion start option
  */
-enum playback_option {
+enum PlaybackOption {
     //% block="RAW"
     START_FROM_RAW = 0, // Start from the raw position.
     //% block="CURRENT"
@@ -45,7 +45,7 @@ enum playback_option {
 /**
  * Curve type of Motion Control
  */
-enum curve_type {
+enum CurveType {
     //% block="NONE"
     CURVE_TYPE_NONE = 0,
     //% block="TRAPEZOID"
@@ -109,7 +109,7 @@ namespace keiganmotor {
 
     let initialized = false
     let motorReceived: KeiganMotor
-    
+
 
     /**
      * Create a new KeiganMotor by specifying its 4 digit of device name .
@@ -120,6 +120,7 @@ namespace keiganmotor {
     //% parts="KeiganMotor"
     //% trackArgs=0,2
     //% blockSetVariable=m
+    //% group.min=0 group.max=255
     export function create(group: number, name: string): KeiganMotor {
         let m = new KeiganMotor(group, name)
         addKeiganMotor(m)
@@ -144,8 +145,8 @@ namespace keiganmotor {
      * A KeiganMotor
      */
     export class KeiganMotor {
-        
-        groupId:number 
+
+        groupId: number
         name: string
         nameBuffer: Buffer
         serialNumber: number
@@ -499,7 +500,7 @@ namespace keiganmotor {
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
         //% advanced=true
-        preparePlaybackMotion(index: number, repeating: number, option: playback_option) {
+        preparePlaybackMotion(index: number, repeating: number, option: PlaybackOption) {
             let start_op: number = option
             this.writeUInt16UInt32UInt8(CMD_ACT_PREPARE_PLAYBACK_MOTION, index, repeating, start_op)
         }
@@ -537,7 +538,7 @@ namespace keiganmotor {
         //% blockId="KeiganMotor_led" block="%KeiganMotor|led state %led_state|red %red|green %green|blue %blue"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
-        led(state: led_state, red: number, green: number, blue: number) {
+        led(state: LedState, red: number, green: number, blue: number) {
             let s: number = state
             this.writeUInt8Array(CMD_LED_SET, [s, red, green, blue])
         }
@@ -627,7 +628,7 @@ namespace keiganmotor {
         //% blockId="curveType" block="%KeiganMotor|set curve type %type"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
-        curveType(curve: curve_type) {
+        curveType(curve: CurveType) {
             this.writeUInt8Array(CMD_REG_CURVE_TYPE, [curve])
         }
 
