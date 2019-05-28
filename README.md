@@ -22,9 +22,19 @@ You need to change KeiganMotor's RADIO mode from BLE to "micro:bit mode".
 If you push Stop Button 10 times again, it will be back to BLE mode.
 
 ## Important
-You need to specify KeiganMotor's RADIO group for micro:bit and its unique 4 digits "name" to control it.
+You need to specify KeiganMotor's unique 4 digits "name" and its RADIO group for micro:bit to control it.
 It is used in initializer of KeiganMotor on MakeCode editor as belows.
-### (1) RADIO group
+
+### (1) Name
+It is a unique specific 4 digit number of KeiganMotor.
+You can know it by two ways as belows.
+1. The last 4 digits of the serial number. 
+ - If the serial number is "ABCDEFGH", the name is "EFGH"  
+2. The 4 digits Included by devicename of Bluetooth Low Energy.
+ - If the device name is "KM-1 EFGH#RGB", the name is "EFGH". 
+   - You can use "KeiganCore" app or other BLE apps to get device name. 
+
+### (2) RADIO group
 You need to match RADIO group between MakeCode and KeiganMotor.
 The default RADIO group of KeiganMotor is 0. 
 
@@ -43,16 +53,6 @@ https://makecode.microbit.org/_fbvR7ifav6Ht
 3. Download to micro:bit and push "A" button.
 4. If the name is found, micro:bit write newGroupId to KeiganMotor.
 5. KeiganMotor will reboot and start RADIO with newGroupId.
-
-### (2) Name
-https://makecode.microbit.org/_TrtD2T09tR3A
-You can know it by two ways as belows.
-
-1. The last 4 digits of the serial number. 
- - If the serial number is "ABCDEFGH", the name is "EFGH"  
-2. The 4 digits Included by devicename of Bluetooth Low Energy.
- - If the device name is "KM-1 EFGH#RGB", the name is "EFGH". 
-   - You can use "KeiganCore" app or other BLE apps to get device name. 
 
 
 ## Blocks
