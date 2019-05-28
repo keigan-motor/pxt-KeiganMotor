@@ -47,7 +47,7 @@ https://makecode.microbit.org/_fbvR7ifav6Ht
 
 You can write RADIO group of KeiganMotor to use the following sample.
 #### KMRadioGroupWriter
-https://makecode.microbit.org/_fbvR7ifav6Ht
+https://makecode.microbit.org/_2RoaiV5R4Y3T
 1. Set your KeiganMotor's 4 digit name to parameter "name".
 2. Set a new group to parameter "newGroupId".
 3. Download to micro:bit and push "A" button.
