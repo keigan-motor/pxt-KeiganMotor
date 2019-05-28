@@ -49,7 +49,7 @@ https://makecode.microbit.org/_fbvR7ifav6Ht
 
 KeiganMotor の RADIO グループを書き換えるプロジェクトは以下をお使い下さい。
 #### KMRadioGroupWriter
-https://makecode.microbit.org/_fbvR7ifav6Ht
+https://makecode.microbit.org/_2RoaiV5R4Y3T
 1. Edit を押してプロジェクトを開きます
 2. 変数 "name" に、グループを書き換えたい KeiganMotor の name を入れます
 3. 変数 "newGroupId" に変更後のグループID入れます（0~255）
