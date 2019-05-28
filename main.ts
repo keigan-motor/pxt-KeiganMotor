@@ -93,6 +93,8 @@ namespace keiganmotor {
     const CMD_READ_MOTOR_MEASUREMENT = 0xB4
     // TODO const CMD_READ_IMU_MEASUREMENT = 0xB5
 
+    const CMD_UBIT_GROUPID = 0xCA
+
     const CMD_LED_SET = 0xE0
 
     const CMD_OTHERS_REBOOT = 0xF0
@@ -113,14 +115,15 @@ namespace keiganmotor {
 
     /**
      * Create a new KeiganMotor by specifying its 4 digit of device name .
-     * @param name included by KeiganMotor's device name
+     * @param group RADIO group ID
+     * @param name the 4 digit name included by KeiganMotor's device name
      */
-    //% blockId="KeiganMotor_create" block="KeiganMotor RADIO group %group name %name "
+    //% blockId="KeiganMotor_create" block="KeiganMotor RADIO group %group| name %name "
     //% weight=90 blockGap=8
     //% parts="KeiganMotor"
     //% trackArgs=0,2
     //% blockSetVariable=m
-    //% group.min=0 group.max=255
+    //% group.min=0 group.max=255 group.defl=1
     export function create(group: number, name: string): KeiganMotor {
         let m = new KeiganMotor(group, name)
         addKeiganMotor(m)
@@ -151,8 +154,6 @@ namespace keiganmotor {
         nameBuffer: Buffer
         serialNumber: number
 
-        group: number
-
         packetId: number
 
         public velocity: number // [radians per second] 
@@ -169,6 +170,8 @@ namespace keiganmotor {
             } else {
                 this.groupId = 0 // Default RADIO group is 0
             }
+
+            //radio.setGroup(this.groupId)
             this.makeNameBuffer()
             this.packetId = 0
             radio.setTransmitSerialNumber(true) // Include micro:bit serial number to packet
@@ -184,10 +187,21 @@ namespace keiganmotor {
         }
 
         /**
+         * Set RADIO Group ID
+         */
+        setGroup(group: number) {
+            if (group >= 0 && group <= 255) {
+                this.groupId = group
+            }
+        }
+
+
+        /**
          * Send Buffer by RADIO
          */
         send(buf: Buffer) {
             radio.setGroup(this.groupId)
+            //console.logValue("id", this.groupId)
             radio.sendBuffer(buf)
             this.packetId++
             if (this.packetId == 65536) this.packetId = 0
@@ -286,7 +300,7 @@ namespace keiganmotor {
                 buf.setNumber(NumberFormat.UInt8BE, 7 + i, values[i])
             }
 
-            radio.sendBuffer(buf)
+            this.send(buf)
         }
 
         /**
@@ -415,9 +429,6 @@ namespace keiganmotor {
         * Preset Position [radian]
         * @param position [radian]
         */
-        //% blockId="presetPosition" block="%KeiganMotor|Preset Position [radian] %position"
-        //% weight=85 blockGap=8
-        //% parts="KeiganMotor"
         presetPosition(position: number) {
             this.writeFloat32(CMD_ACT_PRESET_POSITION, position)
         }
@@ -624,14 +635,27 @@ namespace keiganmotor {
 
         /**
          * Set Curve Type of Motion Control
+         * @param curve [CurveType]
          */
         //% blockId="curveType" block="%KeiganMotor|set curve type %type"
         //% weight=85 blockGap=8
         //% parts="KeiganMotor"
+        //% advanced=true
         curveType(curve: CurveType) {
             this.writeUInt8Array(CMD_REG_CURVE_TYPE, [curve])
         }
 
+        /**
+         * Set RADIO group id of KeiganMotor
+         * @param group:number (0-255) 
+         */
+        //% blockId="groupId" block="%KeiganMotor|set RADIO group for micro:bit %group"
+        //% weight=85 blockGap=8
+        //% parts="KeiganMotor"
+        //% advanced=true
+        ubitGroup(group:number) {
+            this.writeUInt8Array(CMD_UBIT_GROUPID, [group])
+        }
 
         /**
          * Read Motor Measurement (Position, Velocity and Torque) 

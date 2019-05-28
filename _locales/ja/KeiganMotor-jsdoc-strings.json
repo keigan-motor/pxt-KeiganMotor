@@ -22,6 +22,8 @@
   "keiganmotor.KeiganMotor.moveToDeg": "指定位置へ回転させる[度]",
   "keiganmotor.KeiganMotor.moveToDeg|param|position": "[度]",
   "keiganmotor.KeiganMotor.moveTo|param|position": "[ラジアン]",
+  "keiganmotor.KeiganMotor.presetPosition": "現在位置を指定角度に設定する [ラジアン]",
+  "keiganmotor.KeiganMotor.presetPositionDeg": "現在位置を指定角度に設定する [度]",
   "keiganmotor.KeiganMotor.preparePlaybackMotion": "指定番号の再生準備を行う",
   "keiganmotor.KeiganMotor.preparePlaybackMotion|param|index": "再生するインデックス",
   "keiganmotor.KeiganMotor.preparePlaybackMotion|param|option": "再生開始位置のオプション",
@@ -40,6 +42,7 @@
   "keiganmotor.KeiganMotor.startTeachingMotion": "指定番号に動作を記録する",
   "keiganmotor.KeiganMotor.startTeachingMotion|param|index": "@param 時間 [ミリ秒]",
   "keiganmotor.KeiganMotor.stop": "停止する（スピードを0にする）",
+  "keiganmotor.KeiganMotor.curveType": "カーブタイプを変更する",
   "keiganmotor.KeiganMotor.stopPlaybackMotion": "動作の再生を終了する",
   "keiganmotor.KeiganMotor.stopTeachingMotion": "動作の記録を終了する",
   "keiganmotor.KeiganMotor.write": "Send command after prepending name = \"XXXX\" \n[ X X X X | CMD | packetId ]",
@@ -52,6 +55,7 @@
   "keiganmotor.create": "新しいKeiganMotorを4桁のデバイス名と無線グループ（0~255）で生成する",
   "keiganmotor.create|param|name": "KeiganMotorのシリアルナンバーまたはデバイス名の4桁の英数字です",
   "keiganmotor.onReceivedMotorMeasurement": "KeiganMotorから（位置、回転速度、トルク）情報を受け取った時のイベント",
-  "led_state": "LEDの点灯状態",
-  "playback_option": "再生開始オプション"
+  "LedState": "LEDの点灯状態",
+  "PlaybackOption": "再生開始オプション",
+  "CurveType": "カーブタイプ"
 }
