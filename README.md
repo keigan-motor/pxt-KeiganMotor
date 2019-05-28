@@ -1,6 +1,7 @@
 # pxt-keiganmotor
 
 You can control KeiganMotor KM-1 Series from micro:bit via RADIO
+日本語はこちら→(Japanese) https://github.com/keigan-motor/pxt-KeiganMotor/blob/master/README_ja.md
 
 <img src="https://github.com/keigan-motor/pxt-KeiganMotor/blob/master/icon.png?raw=true" width="640">
 
