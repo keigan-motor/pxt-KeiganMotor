@@ -10,8 +10,10 @@ KeiganMotor を micro:bit から無線（RADIO）経由でコントロールで�
 ## 必要条件
 1. KeiganMotor KM-1 シリーズ: **デバイスファームウェアのバージョンは 2.06 以上**
 2. micro:bit MakeCode エディタ (https://makecode.microbit.org)
-
+       機能拡張 →「検索または、プロジェクトのURLを入力」　の欄に 検索ワード "Keigan" または、以下のライブラリのアドレスを入力します
+       
 ## セットアップ
+### KeiganMotor 
 KeiganMotor の無線モードを、Bluetooth Low Energy(BLE) から、micro:bit に変更します。
 
 1. KeiganMotor の電源を入れる
@@ -22,8 +24,15 @@ KeiganMotor の無線モードを、Bluetooth Low Energy(BLE) から、micro:bit
 一度 micro:bit モードに設定すると、電源をOFFした後も micro:bit モードで起動します。
 BLEモードに戻す場合は、停止ボタンを10回押します。
 
+### MakeCode エディタ
+新規プロジェクトを作成し、"pxt-KeiganMotor" 拡張をプロジェクトに追加します。
+
+1. https://makecode.microbit.org にアクセスします
+2. 右上の歯車のアイコンの、"機能拡張" → 「検索または、プロジェクトのURLを入力」　の欄に 検索ワード "Keigan" または、https://github.com/keigan-motor/pxt-KeiganMotor を入力します
+3. 表示された "KeiganMotor" 拡張をクリックして追加します
+
 ## 重要
-KeiganMotor を micro:bit から制御するために、KeiganMotor の 4桁の "name" と、micro:bit 用 RADIO "group" を知る必要があります。
+KeiganMotor を micro:bit から無線で制御するために、KeiganMotor の 4桁の "name" と、micro:bit 用 RADIO "group" を知る必要があります。
 これらは、MakeCode での KeiganMotor 初期化時に利用されます。
 
 ### (1) Name
