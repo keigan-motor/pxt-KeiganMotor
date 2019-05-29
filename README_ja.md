@@ -30,6 +30,7 @@ BLEモードに戻す場合は、停止ボタンを10回押します。
 1. https://makecode.microbit.org にアクセスします
 2. 右上の歯車のアイコンの、"機能拡張" →「検索または、プロジェクトのURLを入力」の欄に 検索ワード "Keigan" または、https://github.com/keigan-motor/pxt-KeiganMotor を入力します
 3. 表示された "KeiganMotor" 拡張をクリックして追加します
+4. 左カラムに「KeiganMotor」が表示されていれば、設定完了です
 
 ## 重要
 KeiganMotor を micro:bit から無線で制御するために、KeiganMotor の 4桁の "name" と、micro:bit 用 RADIO "group" を知る必要があります。
