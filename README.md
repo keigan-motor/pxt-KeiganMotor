@@ -8,17 +8,18 @@ You can control KeiganMotor KM-1 Series from micro:bit via RADIO
 - Documentation: https://document.keigan-motor.com
 
 ## Requirement
-1. KeiganMotor KM-1 Series: **The device firmware version needs to be more than 2.05.**
+1. KeiganMotor KM-1 Series: **The device firmware version needs to be more than 2.06**
 2. MakeCode Editor for micro:bit (https://makecode.microbit.org)
 
 ## Setup
 You need to change KeiganMotor's RADIO mode from BLE to "micro:bit mode".
 
 1. Supply power to KeiganMotor.
-2. Push the middle "Stop" Button 10 times.
+2. Push the middle "Stop" (square-marked) Button 10 times.
 3. It will reboot automatically and change to micro:bit mode.
 (LED will blink Yellow for 2 seconds right after startup when micro:bit mode.)
 
+Once set to micro:bit mode, KeiganMotor will start with micro:bit mode after shutdown.
 If you push Stop Button 10 times again, it will be back to BLE mode.
 
 ## Important
@@ -36,22 +37,26 @@ You can know it by two ways as belows.
 
 ### (2) RADIO group
 You need to match RADIO group between MakeCode and KeiganMotor.
-The default RADIO group of KeiganMotor is 0. 
+The default RADIO group of KeiganMotor is 0. RADIO group can be from 0 to 255.
+If you want to control multiple KeiganMotors, you should assign separate RADIO group to them.
+(Please refer to the section "Control Multiple KeiganMotors" as belows.)
 
-You can get RADIO group of KeiganMotor to use the following sample.
-#### KMRadioGroupFinder
+#### Get RADIO group of KeiganMotor
+Use the following project.
+##### KMRadioGroupFinder
 https://makecode.microbit.org/_fbvR7ifav6Ht
 1. Set your KeiganMotor's 4 digit name to parameter "name".
 2. Download to micro:bit and push "A" button.
 3. If the name is found, the display shows the name and RADIO group number.
 
-You can write RADIO group of KeiganMotor to use the following sample.
-#### KMRadioGroupWriter
+#### Write new RADIO group to KeiganMotor
+Use the following project.
+##### KMRadioGroupWriter
 https://makecode.microbit.org/_2RoaiV5R4Y3T
 1. Set your KeiganMotor's 4 digit name to parameter "name".
 2. Set a new group to parameter "newGroupId".
 3. Download to micro:bit and push "A" button.
-4. If the name is found, micro:bit write newGroupId to KeiganMotor.
+4. If the name is found, micro:bit will write newGroupId to KeiganMotor.
 5. KeiganMotor will reboot and start RADIO with newGroupId.
 
 
