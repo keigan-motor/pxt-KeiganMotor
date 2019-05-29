@@ -12,6 +12,7 @@ You can control KeiganMotor KM-1 Series from micro:bit via RADIO
 2. MakeCode Editor for micro:bit (https://makecode.microbit.org)
 
 ## Setup
+### KeiganMotor
 You need to change KeiganMotor's RADIO mode from BLE to "micro:bit mode".
 
 1. Supply power to KeiganMotor.
@@ -22,8 +23,16 @@ You need to change KeiganMotor's RADIO mode from BLE to "micro:bit mode".
 Once set to micro:bit mode, KeiganMotor will start with micro:bit mode after shutdown.
 If you push Stop Button 10 times again, it will be back to BLE mode.
 
+### MakeCode editor
+Make a new project and add KeiganMotor extension to the project.
+
+1. Move to https://makecode.microbit.org
+2. Click "Extensions" from the upper right gear button.
+3. Input "Keigan" or "https://github.com/keigan-motor/pxt-KeiganMotor" to the textbox
+3. Click to add "KeiganMotor" extension.
+
 ## Important
-You need to specify KeiganMotor's unique 4 digits "name" and its RADIO group for micro:bit to control it.
+You need to specify KeiganMotor's unique 4 digits "name" and its RADIO group for micro:bit to control wirelessly.
 It is used in initializer of KeiganMotor on MakeCode editor as belows.
 
 ### (1) Name
