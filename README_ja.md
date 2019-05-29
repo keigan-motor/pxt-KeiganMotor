@@ -75,6 +75,8 @@ https://makecode.microbit.org/_2RoaiV5R4Y3T
 
 ## ブロック
 KeiganMotor を指定速度で回転させて、LEDを点灯するサンプルです。
+
+https://makecode.microbit.org/_6ARcAWbt5cDq
 <img src="https://github.com/keigan-motor/pxt-KeiganMotor/blob/master/images/block.png?raw=true" width="640">
 
 ## JavaScript
