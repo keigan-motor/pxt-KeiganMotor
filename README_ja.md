@@ -8,7 +8,7 @@ KeiganMotor を micro:bit から無線（RADIO）経由でコントロールで�
 - ドキュメント: https://document.keigan-motor.com
 
 ## 必要条件
-1. KeiganMotor KM-1 シリーズ: **デバイスファームウェアのバージョンは 2.05 以上**
+1. KeiganMotor KM-1 シリーズ: **デバイスファームウェアのバージョンは 2.06 以上**
 2. micro:bit MakeCode エディタ (https://makecode.microbit.org)
 
 ## セットアップ
@@ -39,16 +39,18 @@ KeiganMotor デバイス固有の4桁の英数字です。
 MakeCode 上と、KeiganMotor の RADIO グループを一致させる必要があります。
 KeiganMotor のデフォルト RADIO グループは、0 です。
 
-KeiganMotor の RADIO グループを調べるプロジェクトは以下をお使い下さい。
-#### KMRadioGroupFinder
+#### KeiganMotor の RADIO グループを調べる
+以下のプロジェクトを使用して下さい。
+##### KMRadioGroupFinder
 https://makecode.microbit.org/_fbvR7ifav6Ht
 1. Edit を押してプロジェクトを開きます。
 2. 変数 "name" に、グループを調べたい KeiganMotor の name を入れます
 3. micro:bit にダウンロードし、"A" ボタンを押します
 4. 指定の name の KeiganMotor が見つかった場合、ディスプレイに、name: group の形式で表示されます
 
-KeiganMotor の RADIO グループを書き換えるプロジェクトは以下をお使い下さい。
-#### KMRadioGroupWriter
+#### KeiganMotor の RADIO グループを書き換える
+以下のプロジェクトを使用して下さい。
+##### KMRadioGroupWriter
 https://makecode.microbit.org/_2RoaiV5R4Y3T
 1. Edit を押してプロジェクトを開きます
 2. 変数 "name" に、グループを書き換えたい KeiganMotor の name を入れます
@@ -97,7 +99,7 @@ m1.enable()
 m2.enable()
 ```
 #### TIPS
-同じ RADIO group で複数の KeiganMotor を制御する場合、
+同じ RADIO group で複数の KeiganMotor を制御する場合は、
 混線を避けるため、 "basic.pause(50)" を送信コマンドの間に挿入して下さい
 
 ```typescript
