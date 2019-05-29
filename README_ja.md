@@ -19,6 +19,7 @@ KeiganMotor の無線モードを、Bluetooth Low Energy(BLE) から、micro:bit
 3. 自動で micro:bit モードとして再起動する
 （micro:bit モードで起動直後、LED は黄色に2秒間点滅します)
 
+一度 micro:bit モードに設定すると、電源をOFFした後も micro:bit モードで起動します。
 BLEモードに戻す場合は、停止ボタンを10回押します。
 
 ## 重要
@@ -37,7 +38,9 @@ KeiganMotor デバイス固有の4桁の英数字です。
 
 ### (2) RADIO group
 MakeCode 上と、KeiganMotor の RADIO グループを一致させる必要があります。
-KeiganMotor のデフォルト RADIO グループは、0 です。
+KeiganMotor のデフォルト RADIO グループは、0 です。0~255 の値を設定できます。
+複数の KeiganMotor を制御する場合は、それぞれ異なる RADIO グループに設定することを推奨します。
+下部の、"複数の KeiganMotor を制御する" を参照下さい。
 
 #### KeiganMotor の RADIO グループを調べる
 以下のプロジェクトを使用して下さい。
