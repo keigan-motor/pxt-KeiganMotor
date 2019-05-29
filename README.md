@@ -30,6 +30,7 @@ Make a new project and add KeiganMotor extension to the project.
 2. Click "Extensions" from the upper right gear button.
 3. Input "Keigan" or "https://github.com/keigan-motor/pxt-KeiganMotor" to the textbox
 3. Click to add "KeiganMotor" extension.
+4. Make sure that the extension "KeiganMotor" is displayed in the left column.
 
 ## Important
 You need to specify KeiganMotor's unique 4 digits "name" and its RADIO group for micro:bit to control wirelessly.
