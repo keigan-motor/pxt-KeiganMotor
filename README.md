@@ -71,6 +71,7 @@ https://makecode.microbit.org/_2RoaiV5R4Y3T
 
 ## Sample Project
 Make KeiganMotor rotate and control LED.
+
 https://makecode.microbit.org/_6ARcAWbt5cDq
 <img src="https://github.com/keigan-motor/pxt-KeiganMotor/blob/master/images/block.png?raw=true" width="640">
 
