@@ -59,9 +59,9 @@ https://makecode.microbit.org/_2RoaiV5R4Y3T
 4. If the name is found, micro:bit will write newGroupId to KeiganMotor.
 5. KeiganMotor will reboot and start RADIO with newGroupId.
 
-
-## Blocks
+## Sample Project
 Make KeiganMotor rotate and control LED.
+https://makecode.microbit.org/_6ARcAWbt5cDq
 <img src="https://github.com/keigan-motor/pxt-KeiganMotor/blob/master/images/block.png?raw=true" width="640">
 
 ## JavaScript
