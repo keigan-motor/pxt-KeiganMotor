@@ -7,9 +7,13 @@ You can control KeiganMotor KM-1 Series from micro:bit via RADIO
 - Product page: https://keigan-motor.com
 - Documentation: https://document.keigan-motor.com
 
+## NOTE
+**micro:bit cannot talk to KeiganMotor via RADIO when the firmware of micro:bit is compiled by the latest makecode editor.
+So please ise the above old editor "version v1" as follows.**
+
 ## Requirement
 1. KeiganMotor KM-1 Series: **The device firmware version needs to be more than 2.06**
-2. MakeCode Editor for micro:bit (https://makecode.microbit.org)
+2. MakeCode Editor for micro:bit (~~https://makecode.microbit.org~~ https://makecode.microbit.org/v1)
 
 ## Setup
 ### KeiganMotor
