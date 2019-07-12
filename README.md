@@ -30,7 +30,7 @@ If you push Stop Button 10 times again, it will be back to BLE mode.
 ### MakeCode editor
 Make a new project and add KeiganMotor extension to the project.
 
-1. Move to https://makecode.microbit.org
+1. Move to https://makecode.microbit.org/v1
 2. Click "Extensions" from the upper right gear button.
 3. Input "Keigan" or "https://github.com/keigan-motor/pxt-KeiganMotor" to the textbox
 3. Click to add "KeiganMotor" extension.
