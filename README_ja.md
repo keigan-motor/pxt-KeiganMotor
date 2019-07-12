@@ -7,9 +7,12 @@ KeiganMotor を micro:bit から無線（RADIO）経由でコントロールで�
 - 製品サイト: https://keigan-motor.com
 - ドキュメント: https://document.keigan-motor.com
 
+## ご注意点
+2019/7/12現在、最新の makecode エディタでビルドしたファームウェアをmicro:bitに書き込んだ場合、KeiganMotor がパケットを受信できない問題が発生しております。対策としまして、以下の古いエディタ（バージョンv1）をご使用下さい。
+
 ## 必要条件
 1. KeiganMotor KM-1 シリーズ: **デバイスファームウェアのバージョンは 2.06 以上**
-2. micro:bit MakeCode エディタ (https://makecode.microbit.org)
+2. micro:bit MakeCode エディタ (~~https://makecode.microbit.org~~ https://makecode.microbit.org/v1)
        機能拡張 →「検索または、プロジェクトのURLを入力」　の欄に 検索ワード "Keigan" または、以下のライブラリのアドレスを入力します
        
 ## セットアップ
@@ -27,7 +30,7 @@ BLEモードに戻す場合は、停止ボタンを10回押します。
 ### MakeCode エディタ
 新規プロジェクトを作成し、"pxt-KeiganMotor" 拡張をプロジェクトに追加します。
 
-1. https://makecode.microbit.org にアクセスします
+1. https://makecode.microbit.org/v1 にアクセスします
 2. 右上の歯車のアイコンの、"機能拡張" →「検索または、プロジェクトのURLを入力」の欄に 検索ワード "Keigan" または、https://github.com/keigan-motor/pxt-KeiganMotor を入力します
 3. 表示された "KeiganMotor" 拡張をクリックして追加します
 4. 左カラムに「KeiganMotor」が表示されていれば、設定完了です
